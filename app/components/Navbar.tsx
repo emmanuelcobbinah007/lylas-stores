@@ -6,11 +6,17 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, User, Search } from "lucide-react";
 import lylalogolight from "../../public/Lyla’sLogoLight.png";
+import UserModal from "./modals/UserModal";
+import CartModal from "./modals/CartModal";
+import SearchModal from "./modals/SearchModal";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDiscoverHovered, setIsDiscoverHovered] = useState(false);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,6 +49,33 @@ const Navigation = () => {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const openUserModal = () => {
+    setIsUserModalOpen(true);
+    setIsMobileMenuOpen(false);
+  };
+
+  const closeUserModal = () => {
+    setIsUserModalOpen(false);
+  };
+
+  const openCartModal = () => {
+    setIsCartModalOpen(true);
+    setIsMobileMenuOpen(false);
+  };
+
+  const closeCartModal = () => {
+    setIsCartModalOpen(false);
+  };
+
+  const openSearchModal = () => {
+    setIsSearchModalOpen(true);
+    setIsMobileMenuOpen(false);
+  };
+
+  const closeSearchModal = () => {
+    setIsSearchModalOpen(false);
   };
 
   return (
@@ -182,6 +215,7 @@ const Navigation = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.4, ease: "easeOut" }}
+              onClick={openSearchModal}
               className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
               aria-label="Search"
             >
@@ -191,6 +225,7 @@ const Navigation = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.5, ease: "easeOut" }}
+              onClick={openUserModal}
               className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
               aria-label="User account"
             >
@@ -200,6 +235,7 @@ const Navigation = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
+              onClick={openCartModal}
               className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
               aria-label="Shopping cart"
             >
@@ -285,21 +321,21 @@ const Navigation = () => {
                 >
                   <button
                     className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
-                    onClick={closeMobileMenu}
+                    onClick={openSearchModal}
                     aria-label="Search"
                   >
                     <Search className="h-6 w-6" />
                   </button>
                   <button
                     className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
-                    onClick={closeMobileMenu}
+                    onClick={openUserModal}
                     aria-label="User account"
                   >
                     <User className="h-6 w-6" />
                   </button>
                   <button
                     className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
-                    onClick={closeMobileMenu}
+                    onClick={openCartModal}
                     aria-label="Shopping cart"
                   >
                     <ShoppingCart className="h-6 w-6" />
@@ -310,6 +346,11 @@ const Navigation = () => {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Modals */}
+      <UserModal isOpen={isUserModalOpen} onClose={closeUserModal} />
+      <CartModal isOpen={isCartModalOpen} onClose={closeCartModal} />
+      <SearchModal isOpen={isSearchModalOpen} onClose={closeSearchModal} />
     </header>
   );
 };
