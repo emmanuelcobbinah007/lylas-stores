@@ -22,6 +22,7 @@ const Hero = () => {
           <Image
             src={LylaPic}
             alt="Lyla"
+            priority
             className="w-full h-[80vh] object-cover"
           />
         </motion.div>
