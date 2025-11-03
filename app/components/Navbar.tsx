@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, User } from "lucide-react";
 import lylalogolight from "../../public/Lyla’sLogoLight.png";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isDiscoverHovered, setIsDiscoverHovered] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,21 +26,23 @@ const Navigation = () => {
     { href: "/contact", label: "Contact" },
   ];
 
+  const categories = [
+    { href: "/living-room", label: "Living Room" },
+    { href: "/bedroom", label: "Bedroom" },
+    { href: "/kitchen", label: "Kitchen" },
+    { href: "/bathroom", label: "Bathroom" },
+    { href: "/outdoor", label: "Outdoor" },
+    { href: "/decor", label: "Decor" },
+    { href: "/lighting", label: "Lighting" },
+    { href: "/storage", label: "Storage" },
+  ];
+
   const toggleMobileMenu = () => {
-    if (isMobileMenuOpen) {
-      closeMobileMenu();
-    } else {
-      setIsMobileMenuOpen(true);
-      // Small delay to trigger animation
-      setTimeout(() => setIsAnimating(true), 10);
-    }
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   const closeMobileMenu = () => {
-    setIsAnimating(false);
-    setTimeout(() => {
-      setIsMobileMenuOpen(false);
-    }, 300); // Match the transition duration
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -61,75 +64,12 @@ const Navigation = () => {
           }`}
         >
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <Image
-              src={lylalogolight}
-              alt="Prosupport Logo"
-              width={160}
-              height={160}
-              priority
-              className="h-20 w-auto"
-            />
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-gray-700 hover:text-primary-teal transition-colors duration-300 font-medium"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* CTA Icons */}
-          <div className="hidden md:flex items-center">
-            <button
-              className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
-              aria-label="User account"
-            >
-              <User className="h-5 w-5" />
-            </button>
-            <button
-              className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
-              aria-label="Shopping cart"
-            >
-              <ShoppingCart className="h-5 w-5" />
-            </button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
-            onClick={toggleMobileMenu}
-            aria-label="Toggle menu"
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            {isMobileMenuOpen || isAnimating ? "✕" : "☰"}
-          </button>
-        </nav>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div
-            className={`fixed inset-0 backdrop-blur-lg bg-white/20 z-40 md:hidden transition-opacity duration-300 ease-out ${
-              isAnimating ? "opacity-100" : "opacity-0"
-            }`}
-            onClick={closeMobileMenu}
-          >
-            {/* Close Button */}
-            <button
-              onClick={closeMobileMenu}
-              className="absolute top-14 right-8 text-black hover:text-primary-teal transition-colors duration-300 text-xl"
-              aria-label="Close menu"
-            >
-              ✕
-            </button>
-
-            {/* Logo */}
-            <div className="flex justify-center pt-20">
+            <Link href="/" className="flex items-center">
               <Image
                 src={lylalogolight}
                 alt="Prosupport Logo"
@@ -138,41 +78,206 @@ const Navigation = () => {
                 priority
                 className="h-20 w-auto"
               />
-            </div>
+            </Link>
+          </motion.div>
 
-            {/* Navigation Items */}
-            <div className="flex flex-col items-center justify-center space-y-6 mt-10 h-[50vh]">
-              {navItems.map((item) => (
+          {/* Desktop Navigation */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            className="hidden md:flex items-center space-x-6 relative"
+          >
+            {navItems.map((item, index) => (
+              <motion.div
+                key={item.href}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: 0.3 + index * 0.1,
+                  ease: "easeOut",
+                }}
+                className="relative"
+                onMouseEnter={() =>
+                  item.label === "Discover" && setIsDiscoverHovered(true)
+                }
+                onMouseLeave={() =>
+                  item.label === "Discover" && setIsDiscoverHovered(false)
+                }
+              >
                 <Link
-                  key={item.href}
                   href={item.href}
-                  className="text-black text-xl font-medium hover:text-primary-teal transition-colors duration-300"
-                  onClick={closeMobileMenu}
+                  className="text-gray-700 hover:text-primary-teal transition-colors duration-300 font-medium"
                 >
                   {item.label}
                 </Link>
-              ))}
 
-              {/* Action Icons */}
-              <div className="flex items-center space-x-6 mt-8">
-                <button
-                  className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
-                  onClick={closeMobileMenu}
-                  aria-label="User account"
+                {/* Discover Dropdown */}
+                {item.label === "Discover" && (
+                  <AnimatePresence>
+                    {isDiscoverHovered && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute top-full left-1/2 transform -translate-x-1/2 pt-4 z-50 w-screen flex justify-center"
+                        style={{ marginLeft: "4rem" }}
+                        onMouseEnter={() => setIsDiscoverHovered(true)}
+                        onMouseLeave={() => setIsDiscoverHovered(false)}
+                      >
+                        <div className="flex items-center justify-center space-x-12 bg-white/10 backdrop-blur-sm px-8 py-4 rounded-lg">
+                          {categories.map((category, categoryIndex) => (
+                            <motion.div
+                              key={category.href}
+                              initial={{ opacity: 0, y: 5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.2,
+                                delay: categoryIndex * 0.05,
+                                ease: "easeOut",
+                              }}
+                            >
+                              <Link
+                                href={category.href}
+                                className="text-gray-700 hover:text-primary-teal transition-colors duration-200 whitespace-nowrap font-medium"
+                              >
+                                {category.label}
+                              </Link>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* CTA Icons */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            className="hidden md:flex items-center"
+          >
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.5, ease: "easeOut" }}
+              className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
+              aria-label="User account"
+            >
+              <User className="h-5 w-5" />
+            </motion.button>
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
+              className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
+              aria-label="Shopping cart"
+            >
+              <ShoppingCart className="h-5 w-5" />
+            </motion.button>
+          </motion.div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? "✕" : "☰"}
+          </button>
+        </nav>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 backdrop-blur-lg bg-white/20 z-40 md:hidden"
+              onClick={closeMobileMenu}
+            >
+              {/* Close Button */}
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+                onClick={closeMobileMenu}
+                className="absolute top-14 right-8 text-black hover:text-primary-teal transition-colors duration-300 text-xl"
+                aria-label="Close menu"
+              >
+                ✕
+              </motion.button>
+
+              {/* Logo */}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.5 }}
+                className="flex justify-center pt-20"
+              >
+                <Image
+                  src={lylalogolight}
+                  alt="Prosupport Logo"
+                  width={160}
+                  height={160}
+                  priority
+                  className="h-20 w-auto"
+                />
+              </motion.div>
+
+              {/* Navigation Items */}
+              <div className="flex flex-col items-center justify-center space-y-6 mt-10 h-[50vh]">
+                {navItems.map((item, index) => (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+                  >
+                    <Link
+                      href={item.href}
+                      className="text-black text-xl font-medium hover:text-primary-teal transition-colors duration-300"
+                      onClick={closeMobileMenu}
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
+
+                {/* Action Icons */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7, duration: 0.4 }}
+                  className="flex items-center space-x-6 mt-8"
                 >
-                  <User className="h-6 w-6" />
-                </button>
-                <button
-                  className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
-                  onClick={closeMobileMenu}
-                  aria-label="Shopping cart"
-                >
-                  <ShoppingCart className="h-6 w-6" />
-                </button>
+                  <button
+                    className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
+                    onClick={closeMobileMenu}
+                    aria-label="User account"
+                  >
+                    <User className="h-6 w-6" />
+                  </button>
+                  <button
+                    className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
+                    onClick={closeMobileMenu}
+                    aria-label="Shopping cart"
+                  >
+                    <ShoppingCart className="h-6 w-6" />
+                  </button>
+                </motion.div>
               </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );
