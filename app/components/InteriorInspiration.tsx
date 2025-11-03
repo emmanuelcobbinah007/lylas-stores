@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
@@ -208,28 +209,30 @@ const InteriorInspiration = () => {
           >
             Ready to elevate your space?
           </motion.p>
-          <motion.button
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            className="group inline-flex items-center px-10 py-4 text-sm font-medium text-white bg-gray-900 rounded-full hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl font-poppins"
-          >
-            <span className="relative z-10">Explore Our Collection</span>
-            <motion.svg
-              initial={{ x: 0 }}
-              whileHover={{ x: 4 }}
-              className="ml-2 w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <Link href="/discover">
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="group inline-flex items-center px-10 py-4 text-sm font-medium text-white bg-gray-900 rounded-full hover:bg-gray-800 hover:cursor-pointer transition-all duration-300 shadow-lg hover:shadow-xl font-poppins"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </motion.svg>
-          </motion.button>
+              <span className="relative z-10">Explore Our Collection</span>
+              <motion.svg
+                initial={{ x: 0 }}
+                whileHover={{ x: 4 }}
+                className="ml-2 w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
+              </motion.svg>
+            </motion.button>
+          </Link>
         </motion.div>
       </div>
     </section>

@@ -8,7 +8,7 @@ import lylalogolight from "../../public/Lyla’sLogoLight.png";
 
 const Footer = () => {
   const quickLinks = [
-    { href: "/#discover", label: "Discover" },
+    { href: "/discover", label: "Discover" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
     { href: "/faq", label: "FAQ" },

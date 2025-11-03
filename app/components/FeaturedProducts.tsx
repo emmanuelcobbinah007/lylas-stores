@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useRef } from "react";
@@ -143,36 +144,38 @@ const FeaturedProducts = () => {
         </div>
 
         {/* View All Link */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          viewport={{ once: true }}
-          className="text-center mt-16"
-        >
-          <motion.button
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            className="group inline-flex items-center px-8 py-3 text-sm font-medium text-gray-900 border border-gray-300 rounded-full hover:border-gray-900 transition-all duration-300 font-poppins"
+        <Link href="/discover">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            viewport={{ once: true }}
+            className="text-center mt-16"
           >
-            <span className="relative z-10">Shop All</span>
-            <motion.svg
-              initial={{ x: 0 }}
-              whileHover={{ x: 4 }}
-              className="ml-2 w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="group inline-flex items-center px-8 py-3 text-sm font-medium text-gray-900 border border-gray-300 rounded-full hover:cursor-pointer hover:border-gray-900 transition-all duration-300 font-poppins"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </motion.svg>
-          </motion.button>
-        </motion.div>
+              <span className="relative z-10">Shop All</span>
+              <motion.svg
+                initial={{ x: 0 }}
+                whileHover={{ x: 4 }}
+                className="ml-2 w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
+              </motion.svg>
+            </motion.button>
+          </motion.div>
+        </Link>
       </div>
     </section>
   );
