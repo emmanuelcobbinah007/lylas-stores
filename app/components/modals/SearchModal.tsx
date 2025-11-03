@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 type SearchModalProps = {
   isOpen: boolean;
@@ -10,57 +10,161 @@ type SearchModalProps = {
 };
 
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* White overlay */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: 0.8 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-white z-40"
             onClick={onClose}
           />
 
-          {/* Modal - Slide down from top */}
+          {/* Floating Search Container */}
           <motion.div
-            initial={{ opacity: 0, y: -100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -100 }}
-            className="fixed top-0 left-0 right-0 bg-white shadow-2xl z-50 max-h-[80vh] overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, y: -50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50, scale: 0.95 }}
+            transition={{
+              type: "spring",
+              damping: 25,
+              stiffness: 300,
+              duration: 0.4,
+            }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-2xl z-50 px-4"
           >
-            {/* Header with search input */}
-            <div className="flex items-center gap-4 p-6 border-b border-gray-200">
-              <div className="flex-1">
-                <h2 className="text-xl font-playfair text-gray-900 mb-4">
-                  Search Products
-                </h2>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search for products..."
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins"
-                    autoFocus
-                  />
-                </div>
+            {/* Search Bar */}
+            <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+              <div className="flex items-center gap-4 p-4">
+                <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Search for products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1 text-lg font-poppins text-gray-900 placeholder-gray-400 bg-transparent border-none outline-none"
+                  autoFocus
+                />
+                <button
+                  onClick={onClose}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors duration-200 flex-shrink-0"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                onClick={onClose}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors duration-200 flex-shrink-0"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            {/* Content Placeholder */}
-            <div className="p-6 max-h-96 overflow-y-auto">
-              <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                <p className="text-gray-500 font-poppins text-sm">
-                  Search results will appear here
-                </p>
-              </div>
+              {/* Search Results */}
+              {searchQuery && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="border-t border-gray-100"
+                >
+                  <div className="p-4 max-h-80 overflow-y-auto">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {/* Placeholder results */}
+                      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                        <div className="aspect-square bg-gray-200 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <div className="p-3">
+                          <h3 className="font-poppins font-medium text-gray-900 text-sm line-clamp-2 mb-1">
+                            Sample Product
+                          </h3>
+                          <p className="text-xs text-gray-500 font-medium">
+                            ₵299.00
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                        <div className="aspect-square bg-gray-200 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <div className="p-3">
+                          <h3 className="font-poppins font-medium text-gray-900 text-sm line-clamp-2 mb-1">
+                            Another Product
+                          </h3>
+                          <p className="text-xs text-gray-500 font-medium">
+                            ₵159.00
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                        <div className="aspect-square bg-gray-200 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <div className="p-3">
+                          <h3 className="font-poppins font-medium text-gray-900 text-sm line-clamp-2 mb-1">
+                            Third Product
+                          </h3>
+                          <p className="text-xs text-gray-500 font-medium">
+                            ₵89.00
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                        <div className="aspect-square bg-gray-200 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <div className="p-3">
+                          <h3 className="font-poppins font-medium text-gray-900 text-sm line-clamp-2 mb-1">
+                            Fourth Product
+                          </h3>
+                          <p className="text-xs text-gray-500 font-medium">
+                            ₵425.00
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                        <div className="aspect-square bg-gray-200 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <div className="p-3">
+                          <h3 className="font-poppins font-medium text-gray-900 text-sm line-clamp-2 mb-1">
+                            Fifth Product
+                          </h3>
+                          <p className="text-xs text-gray-500 font-medium">
+                            ₵180.00
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                        <div className="aspect-square bg-gray-200 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <div className="p-3">
+                          <h3 className="font-poppins font-medium text-gray-900 text-sm line-clamp-2 mb-1">
+                            Sixth Product
+                          </h3>
+                          <p className="text-xs text-gray-500 font-medium">
+                            ₵95.00
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* No results state */}
+                    {searchQuery.length > 2 && (
+                      <div className="text-center py-8">
+                        <p className="text-gray-500 font-poppins text-sm">
+                          No products found for "{searchQuery}"
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         </>
