@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductCard from "@/app/components/ProductCard";
 import Link from "next/link";
@@ -103,7 +103,8 @@ const categoryMap: { [key: string]: string } = {
   dining: "Dining",
 };
 
-export default function DiscoverPage() {
+// Component that handles search params (needs to be wrapped in Suspense)
+function DiscoverContent() {
   const searchParams = useSearchParams();
   const [activeCategory, setActiveCategory] = useState("All");
   const [filteredProducts, setFilteredProducts] = useState(products);
@@ -133,6 +134,7 @@ export default function DiscoverPage() {
       );
     }
   };
+
   return (
     <div className="max-w-7xl mx-auto">
       <div className="my-14"></div>
@@ -179,5 +181,22 @@ export default function DiscoverPage() {
         </section>
       </main>
     </div>
+  );
+}
+
+export default function DiscoverPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-7xl mx-auto min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading products...</p>
+          </div>
+        </div>
+      }
+    >
+      <DiscoverContent />
+    </Suspense>
   );
 }
