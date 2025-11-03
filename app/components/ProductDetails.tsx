@@ -1,0 +1,288 @@
+"use client";
+
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Star, Heart, Share2, Truck, Shield, RotateCcw } from "lucide-react";
+
+type ProductDetailsProps = {
+  product: {
+    id: string;
+    name: string;
+    price: string;
+    originalPrice?: string;
+    rating: number;
+    reviewCount: number;
+    description: string;
+    features: string[];
+    specifications: { [key: string]: string };
+    inStock: boolean;
+    category: string;
+  };
+};
+
+export default function ProductDetails({ product }: ProductDetailsProps) {
+  const [quantity, setQuantity] = useState(1);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (newQuantity >= 1) {
+      setQuantity(newQuantity);
+    }
+  };
+
+  const handleAddToCart = () => {
+    // Add to cart logic here
+    console.log(`Added ${quantity} of ${product.name} to cart`);
+  };
+
+  const handleWishlist = () => {
+    setIsWishlisted(!isWishlisted);
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        text: product.description,
+        url: window.location.href,
+      });
+    } else {
+      // Fallback: copy URL to clipboard
+      navigator.clipboard.writeText(window.location.href);
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* Product Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="flex items-center gap-2 text-sm text-gray-500 mb-2 font-poppins">
+          <span className="uppercase tracking-wider">{product.category}</span>
+        </div>
+
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-playfair text-gray-900 mb-4">
+          {product.name}
+        </h1>
+
+        {/* Rating */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={`w-4 h-4 ${
+                  i < Math.floor(product.rating)
+                    ? "text-yellow-400 fill-current"
+                    : "text-gray-300"
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-sm text-gray-600 font-poppins">
+            {product.rating} ({product.reviewCount} reviews)
+          </span>
+        </div>
+
+        {/* Price */}
+        <div className="flex items-baseline gap-3 mb-6">
+          <span className="text-2xl md:text-3xl font-playfair text-gray-900">
+            {product.price}
+          </span>
+          {product.originalPrice && (
+            <span className="text-lg text-gray-500 line-through font-poppins">
+              {product.originalPrice}
+            </span>
+          )}
+        </div>
+
+        {/* Stock Status */}
+        <div className="mb-8">
+          {product.inStock ? (
+            <span className="text-green-600 font-medium font-poppins">
+              In Stock
+            </span>
+          ) : (
+            <span className="text-red-600 font-medium font-poppins">
+              Out of Stock
+            </span>
+          )}
+        </div>
+      </motion.div>
+
+      {/* Add to Cart Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="space-y-6"
+      >
+        {/* Quantity Selector */}
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-medium text-gray-700 font-poppins">
+            Quantity:
+          </span>
+          <div className="flex items-center border border-gray-200 rounded-lg">
+            <button
+              onClick={() => handleQuantityChange(quantity - 1)}
+              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 transition-colors duration-200"
+              disabled={quantity <= 1}
+            >
+              −
+            </button>
+            <span className="w-12 text-center font-poppins">{quantity}</span>
+            <button
+              onClick={() => handleQuantityChange(quantity + 1)}
+              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 transition-colors duration-200"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <motion.button
+            onClick={handleAddToCart}
+            disabled={!product.inStock}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex-1 bg-gray-900 text-white py-4 px-6 rounded-lg font-medium transition-all duration-200 hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed font-poppins"
+          >
+            {product.inStock ? "Add to Cart" : "Out of Stock"}
+          </motion.button>
+
+          <div className="flex gap-2">
+            <motion.button
+              onClick={handleWishlist}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`w-12 h-12 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${
+                isWishlisted
+                  ? "border-red-500 text-red-500 bg-red-50"
+                  : "border-gray-200 text-gray-600 hover:border-gray-400"
+              }`}
+            >
+              <Heart
+                className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`}
+              />
+            </motion.button>
+
+            <motion.button
+              onClick={handleShare}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-12 h-12 rounded-lg border-2 border-gray-200 text-gray-600 hover:border-gray-400 flex items-center justify-center transition-all duration-200"
+            >
+              <Share2 className="w-5 h-5" />
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Product Features */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="space-y-4"
+      >
+        <h3 className="text-lg font-playfair text-gray-900">Key Features</h3>
+        <ul className="space-y-2">
+          {product.features.map((feature, index) => (
+            <li
+              key={index}
+              className="flex items-start gap-2 text-gray-700 font-poppins"
+            >
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+              {feature}
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+
+      {/* Description */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+        className="space-y-4"
+      >
+        <h3 className="text-lg font-playfair text-gray-900">Description</h3>
+        <p className="text-gray-700 leading-relaxed font-poppins">
+          {product.description}
+        </p>
+      </motion.div>
+
+      {/* Specifications */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.8 }}
+        className="space-y-4"
+      >
+        <h3 className="text-lg font-playfair text-gray-900">Specifications</h3>
+        <div className="space-y-3">
+          {Object.entries(product.specifications).map(([key, value]) => (
+            <div
+              key={key}
+              className="flex justify-between py-2 border-b border-gray-100"
+            >
+              <span className="text-gray-600 font-poppins">{key}</span>
+              <span className="text-gray-900 font-poppins">{value}</span>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Shipping & Returns */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 1.0 }}
+        className="border-t border-gray-200 pt-8 space-y-4"
+      >
+        <div className="grid gap-4">
+          <div className="flex items-start gap-3">
+            <Truck className="w-5 h-5 text-gray-600 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-gray-900 font-poppins">
+                Free Shipping
+              </p>
+              <p className="text-sm text-gray-600 font-poppins">
+                On orders over ₵150
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <RotateCcw className="w-5 h-5 text-gray-600 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-gray-900 font-poppins">
+                Easy Returns
+              </p>
+              <p className="text-sm text-gray-600 font-poppins">
+                30-day return policy
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <Shield className="w-5 h-5 text-gray-600 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-gray-900 font-poppins">
+                2-Year Warranty
+              </p>
+              <p className="text-sm text-gray-600 font-poppins">
+                Quality guarantee
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}

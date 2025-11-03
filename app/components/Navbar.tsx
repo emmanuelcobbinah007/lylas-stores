@@ -27,14 +27,14 @@ const Navigation = () => {
   ];
 
   const categories = [
-    { href: "/living-room", label: "Living Room" },
-    { href: "/bedroom", label: "Bedroom" },
-    { href: "/kitchen", label: "Kitchen" },
-    { href: "/bathroom", label: "Bathroom" },
-    { href: "/outdoor", label: "Outdoor" },
-    { href: "/decor", label: "Decor" },
-    { href: "/lighting", label: "Lighting" },
-    { href: "/storage", label: "Storage" },
+    { href: "/discover?category=living-room", label: "Living Room" },
+    { href: "/discover?category=bedroom", label: "Bedroom" },
+    { href: "/discover?category=kitchen", label: "Kitchen" },
+    { href: "/discover?category=bathroom", label: "Bathroom" },
+    { href: "/discover?category=outdoor", label: "Outdoor" },
+    { href: "/discover?category=decor", label: "Decor" },
+    { href: "/discover?category=lighting", label: "Lighting" },
+    { href: "/discover?category=storage", label: "Storage" },
   ];
 
   const toggleMobileMenu = () => {

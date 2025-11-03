@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import lylalogolight from "../../public/Lyla’sLogoLight.png";
+import AuroraLogo from "../../public/AuroraLogo.png";
 
 const Footer = () => {
   const quickLinks = [
@@ -140,6 +141,15 @@ const Footer = () => {
             <p className="text-xs text-gray-500 font-poppins">
               © {new Date().getFullYear()} Lyia's Stores. All rights reserved.
             </p>
+          </motion.div>
+          <motion.div>
+            <Image
+              src={AuroraLogo}
+              alt="Aurora Logo"
+              width={120}
+              height={120}
+              className="h-30 w-auto opacity-90"
+            />
           </motion.div>
         </div>
       </div>

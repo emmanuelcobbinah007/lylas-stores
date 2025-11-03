@@ -12,7 +12,7 @@ const featuredProducts = [
     id: 1,
     name: "Velvet Accent Chair",
     description: "Luxurious comfort meets timeless design",
-    price: "$899",
+    price: "₵899",
     image: "/ambientLamp.jpg", // Replace with actual product images
     category: "Seating",
   },
@@ -20,7 +20,7 @@ const featuredProducts = [
     id: 2,
     name: "Marble Beauty Mirror",
     description: "Elegant centerpiece for modern living",
-    price: "$1,299",
+    price: "₵1,299",
     image: "/beautifulMirror.jpg", // Replace with actual product images
     category: "Decor",
   },
@@ -28,7 +28,7 @@ const featuredProducts = [
     id: 3,
     name: "Cloud Bed Frame",
     description: "Sophisticated design for a serene bedroom",
-    price: "$649",
+    price: "₵649",
     image: "/bedframe.jpg", // Replace with actual product images
     category: "Bedroom",
   },
@@ -36,7 +36,7 @@ const featuredProducts = [
     id: 4,
     name: "Amber Kitchen Stool",
     description: "Soft luxury kitchen stool for cozy evenings",
-    price: "$299",
+    price: "₵299",
     image: "/kitchenstool.jpg", // Replace with actual product images
     category: "Kitchen",
   },
