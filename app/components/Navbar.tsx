@@ -106,12 +106,23 @@ const Navigation = () => {
                   item.label === "Discover" && setIsDiscoverHovered(false)
                 }
               >
-                <Link
-                  href={item.href}
-                  className="text-gray-700 hover:text-primary-teal transition-colors duration-300 font-medium"
+                <motion.div
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
                 >
-                  {item.label}
-                </Link>
+                  <Link
+                    href={item.href}
+                    className="text-gray-700 hover:text-[#c78e3a] transition-colors duration-300 font-medium relative group"
+                  >
+                    {item.label}
+                    <motion.div
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#c78e3a] origin-left"
+                      initial={{ scaleX: 0 }}
+                      whileHover={{ scaleX: 1 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                    />
+                  </Link>
+                </motion.div>
 
                 {/* Discover Dropdown */}
                 {item.label === "Discover" && (
@@ -122,12 +133,11 @@ const Navigation = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute top-full left-1/2 transform -translate-x-1/2 pt-4 z-50 w-screen flex justify-center"
-                        style={{ marginLeft: "4rem" }}
+                        className="fixed top-20 left-0 right-0 flex justify-center pt-4 z-50"
                         onMouseEnter={() => setIsDiscoverHovered(true)}
                         onMouseLeave={() => setIsDiscoverHovered(false)}
                       >
-                        <div className="flex items-center justify-center space-x-12 bg-white/10 backdrop-blur-sm px-8 py-4 rounded-lg">
+                        <div className="flex items-center justify-center space-x-8 bg-white/90 backdrop-blur-sm px-8 py-4 rounded-lg shadow-lg border border-gray-200">
                           {categories.map((category, categoryIndex) => (
                             <motion.div
                               key={category.href}
@@ -139,12 +149,17 @@ const Navigation = () => {
                                 ease: "easeOut",
                               }}
                             >
-                              <Link
-                                href={category.href}
-                                className="text-gray-700 hover:text-primary-teal transition-colors duration-200 whitespace-nowrap font-medium"
+                              <motion.div
+                                whileHover={{ scale: 1.05, y: -1 }}
+                                transition={{ duration: 0.2, ease: "easeOut" }}
                               >
-                                {category.label}
-                              </Link>
+                                <Link
+                                  href={category.href}
+                                  className="text-gray-700 hover:text-[#c78e3a] transition-colors duration-200 whitespace-nowrap font-medium"
+                                >
+                                  {category.label}
+                                </Link>
+                              </motion.div>
                             </motion.div>
                           ))}
                         </div>
