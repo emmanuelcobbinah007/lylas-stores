@@ -131,7 +131,7 @@ export default function ProductImageGallery({
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
-              className="relative max-w-4xl max-h-full aspect-square"
+              className="relative w-full h-full max-w-5xl max-h-[90vh]"
               onClick={(e) => e.stopPropagation()}
             >
               <Image
@@ -139,6 +139,8 @@ export default function ProductImageGallery({
                 alt={images[currentImageIndex]?.alt || productName}
                 fill
                 className="object-contain"
+                sizes="100vw"
+                priority
               />
               <button
                 onClick={() => setIsZoomed(false)}
