@@ -14,25 +14,30 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* White overlay for clicking outside to close */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: 0.8 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-white z-40"
             onClick={onClose}
           />
 
-          {/* Modal */}
+          {/* User Panel - Slide in from right */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl z-50 p-6"
-            onClick={(e) => e.stopPropagation()}
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{
+              type: "spring",
+              damping: 25,
+              stiffness: 300,
+              duration: 0.4,
+            }}
+            className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-playfair text-gray-900">Account</h2>
               <button
                 onClick={onClose}
@@ -43,10 +48,19 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
             </div>
 
             {/* Content Placeholder */}
-            <div className="space-y-4">
-              <div className="h-32 bg-gray-50 rounded-lg flex items-center justify-center">
+            <div className="flex-1 p-6">
+              <div className="h-full bg-gray-50 rounded-lg flex items-center justify-center">
                 <p className="text-gray-500 font-poppins text-sm">
                   User modal content will go here
+                </p>
+              </div>
+            </div>
+
+            {/* Footer placeholder for action buttons */}
+            <div className="p-6 border-t border-gray-200">
+              <div className="h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                <p className="text-gray-500 font-poppins text-sm">
+                  Login/Signup buttons area
                 </p>
               </div>
             </div>
