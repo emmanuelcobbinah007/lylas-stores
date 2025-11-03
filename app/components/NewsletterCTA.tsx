@@ -41,7 +41,7 @@ const NewsletterCTA = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
-            className="text-lg lg:text-xl text-gray-700 leading-relaxed max-w-2xl mx-auto font-inter"
+            className="text-lg lg:text-xl text-gray-700 leading-relaxed max-w-2xl mx-auto font-poppins"
           >
             Exclusive access to new arrivals, limited collections, and special
             member pricing. Be the first to shop our latest luxury pieces.
@@ -72,7 +72,7 @@ const NewsletterCTA = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Your email address"
                   required
-                  className="w-full px-6 py-4 text-gray-900 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all duration-300 font-inter placeholder-gray-500"
+                  className="w-full px-6 py-4 text-gray-900 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all duration-300 font-poppins placeholder-gray-500"
                 />
               </motion.div>
 
@@ -80,7 +80,7 @@ const NewsletterCTA = () => {
                 type="submit"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 text-sm font-medium text-white bg-gray-900 rounded-full hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl font-inter whitespace-nowrap"
+                className="px-8 py-4 text-sm font-medium text-white bg-gray-900 rounded-full hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl font-poppins whitespace-nowrap"
               >
                 Join Circle
               </motion.button>
@@ -115,7 +115,7 @@ const NewsletterCTA = () => {
               <h3 className="text-xl font-light text-gray-900 mb-2 font-playfair">
                 Welcome to the Circle
               </h3>
-              <p className="text-gray-600 font-inter">
+              <p className="text-gray-600 font-poppins">
                 You'll be the first to know about our newest collections and
                 exclusive offers.
               </p>
@@ -204,7 +204,7 @@ const NewsletterCTA = () => {
               <h4 className="text-lg font-medium text-gray-900 mb-2 font-playfair">
                 {benefit.title}
               </h4>
-              <p className="text-sm text-gray-600 font-inter leading-relaxed">
+              <p className="text-sm text-gray-600 font-poppins leading-relaxed">
                 {benefit.description}
               </p>
             </motion.div>
@@ -217,7 +217,7 @@ const NewsletterCTA = () => {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.8 }}
           viewport={{ once: true }}
-          className="mt-8 text-xs text-gray-500 font-inter"
+          className="mt-8 text-xs text-gray-500 font-poppins"
         >
           We respect your privacy. Unsubscribe at any time. No spam, just
           exclusive offers and luxury home inspiration.

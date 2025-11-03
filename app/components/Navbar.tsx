@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, User } from "lucide-react";
+import { ShoppingCart, User, Search } from "lucide-react";
 import lylalogolight from "../../public/Lyla’sLogoLight.png";
 
 const Navigation = () => {
@@ -181,6 +181,15 @@ const Navigation = () => {
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.4, ease: "easeOut" }}
+              className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5" />
+            </motion.button>
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.5, ease: "easeOut" }}
               className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
               aria-label="User account"
@@ -274,6 +283,13 @@ const Navigation = () => {
                   transition={{ delay: 0.7, duration: 0.4 }}
                   className="flex items-center space-x-6 mt-8"
                 >
+                  <button
+                    className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
+                    onClick={closeMobileMenu}
+                    aria-label="Search"
+                  >
+                    <Search className="h-6 w-6" />
+                  </button>
                   <button
                     className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
                     onClick={closeMobileMenu}

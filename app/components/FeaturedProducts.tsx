@@ -12,32 +12,32 @@ const featuredProducts = [
     name: "Velvet Accent Chair",
     description: "Luxurious comfort meets timeless design",
     price: "$899",
-    image: "/LylaPic.jpg", // Replace with actual product images
+    image: "/ambientLamp.jpg", // Replace with actual product images
     category: "Seating",
   },
   {
     id: 2,
-    name: "Marble Coffee Table",
+    name: "Marble Beauty Mirror",
     description: "Elegant centerpiece for modern living",
     price: "$1,299",
-    image: "/LylaPic.jpg", // Replace with actual product images
-    category: "Tables",
+    image: "/beautifulMirror.jpg", // Replace with actual product images
+    category: "Decor",
   },
   {
     id: 3,
-    name: "Brass Floor Lamp",
-    description: "Sophisticated lighting for any space",
+    name: "Cloud Bed Frame",
+    description: "Sophisticated design for a serene bedroom",
     price: "$649",
-    image: "/LylaPic.jpg", // Replace with actual product images
-    category: "Lighting",
+    image: "/bedframe.jpg", // Replace with actual product images
+    category: "Bedroom",
   },
   {
     id: 4,
-    name: "Cashmere Throw",
-    description: "Soft luxury for cozy evenings",
+    name: "Amber Kitchen Stool",
+    description: "Soft luxury kitchen stool for cozy evenings",
     price: "$299",
-    image: "/LylaPic.jpg", // Replace with actual product images
-    category: "Textiles",
+    image: "/kitchenstool.jpg", // Replace with actual product images
+    category: "Kitchen",
   },
 ];
 
@@ -60,7 +60,7 @@ const FeaturedProducts = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="text-3xl lg:text-4xl font-light text-gray-900 mb-4 font-playfair"
+            className="text-4xl lg:text-5xl font-light text-gray-900 mb-4 font-playfair"
           >
             Bestselling Pieces
           </motion.h2>
@@ -69,7 +69,7 @@ const FeaturedProducts = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
-            className="text-lg text-gray-600 max-w-2xl mx-auto font-inter"
+            className="text-lg text-gray-600 max-w-2xl mx-auto font-poppins"
           >
             Our most coveted home decor pieces, loved by customers for their
             exceptional quality and timeless appeal
@@ -113,7 +113,7 @@ const FeaturedProducts = () => {
                   className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center"
                 >
                   <div className="bg-white/95 backdrop-blur-sm px-6 py-3 rounded-full">
-                    <span className="text-lg font-medium text-gray-900 font-inter">
+                    <span className="text-lg font-medium text-gray-900 font-poppins">
                       {product.price}
                     </span>
                   </div>
@@ -128,13 +128,13 @@ const FeaturedProducts = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 + 0.3 }}
                 viewport={{ once: true }}
               >
-                <p className="text-sm text-gray-500 uppercase tracking-wider font-inter">
+                <p className="text-sm text-gray-500 uppercase tracking-wider font-poppins">
                   {product.category}
                 </p>
                 <h3 className="text-xl font-light text-gray-900 group-hover:text-gray-600 transition-colors duration-300 font-playfair">
                   {product.name}
                 </h3>
-                <p className="text-sm text-gray-600 leading-relaxed font-inter">
+                <p className="text-sm text-gray-600 leading-relaxed font-poppins">
                   {product.description}
                 </p>
               </motion.div>
@@ -153,7 +153,7 @@ const FeaturedProducts = () => {
           <motion.button
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="group inline-flex items-center px-8 py-3 text-sm font-medium text-gray-900 border border-gray-300 rounded-full hover:border-gray-900 transition-all duration-300 font-inter"
+            className="group inline-flex items-center px-8 py-3 text-sm font-medium text-gray-900 border border-gray-300 rounded-full hover:border-gray-900 transition-all duration-300 font-poppins"
           >
             <span className="relative z-10">Shop All</span>
             <motion.svg

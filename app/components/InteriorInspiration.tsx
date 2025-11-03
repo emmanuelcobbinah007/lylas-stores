@@ -9,7 +9,7 @@ import { useRef } from "react";
 const lifestyleImages = [
   {
     id: 1,
-    image: "/LylaPic.jpg", // Replace with actual lifestyle images
+    image: "/livingroominspi.jpg", // Replace with actual lifestyle images
     title: "Modern Minimalist Living",
     description: "Clean lines meet warm textures",
     featuredItems: ["Velvet Accent Chair", "Marble Coffee Table"],
@@ -17,7 +17,7 @@ const lifestyleImages = [
   },
   {
     id: 2,
-    image: "/LylaPic.jpg", // Replace with actual lifestyle images
+    image: "/kitcheninspi.jpg", // Replace with actual lifestyle images
     title: "Cozy Reading Nook",
     description: "A perfect corner for quiet moments",
     featuredItems: ["Brass Floor Lamp", "Cashmere Throw"],
@@ -25,7 +25,7 @@ const lifestyleImages = [
   },
   {
     id: 3,
-    image: "/LylaPic.jpg", // Replace with actual lifestyle images
+    image: "/bedroominspi.jpg", // Replace with actual lifestyle images
     title: "Elegant Dining Space",
     description: "Where conversations flow like wine",
     featuredItems: ["Dining Table", "Pendant Light"],
@@ -33,7 +33,7 @@ const lifestyleImages = [
   },
   {
     id: 4,
-    image: "/LylaPic.jpg", // Replace with actual lifestyle images
+    image: "/bathroominspi.jpg", // Replace with actual lifestyle images
     title: "Serene Bedroom Retreat",
     description: "Your personal sanctuary awaits",
     featuredItems: ["Platform Bed", "Linen Bedding"],
@@ -41,7 +41,7 @@ const lifestyleImages = [
   },
   {
     id: 5,
-    image: "/LylaPic.jpg", // Replace with actual lifestyle images
+    image: "/dininginspi.jpeg", // Replace with actual lifestyle images
     title: "Sun-Soaked Study",
     description: "Inspiration flows with natural light",
     featuredItems: ["Desk Chair", "Table Lamp"],
@@ -97,7 +97,7 @@ const InteriorInspiration = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
-            className="text-lg text-gray-600 max-w-2xl mx-auto font-inter"
+            className="text-lg text-gray-600 max-w-2xl mx-auto font-poppins"
           >
             See how our luxury pieces transform real homes into stunning
             showcases of sophisticated living.
@@ -156,7 +156,7 @@ const InteriorInspiration = () => {
                       <h3 className="text-xl lg:text-2xl font-light font-playfair leading-tight">
                         {lifestyle.title}
                       </h3>
-                      <p className="text-sm opacity-90 font-inter leading-relaxed">
+                      <p className="text-sm opacity-90 font-poppins leading-relaxed">
                         {lifestyle.description}
                       </p>
 
@@ -165,7 +165,7 @@ const InteriorInspiration = () => {
                         {lifestyle.featuredItems.map((item, itemIndex) => (
                           <span
                             key={itemIndex}
-                            className="px-3 py-1 text-xs bg-white/20 backdrop-blur-sm rounded-full font-inter"
+                            className="px-3 py-1 text-xs bg-white/20 backdrop-blur-sm rounded-full font-poppins"
                           >
                             {item}
                           </span>
@@ -177,7 +177,7 @@ const InteriorInspiration = () => {
                         {lifestyle.tags.map((tag, tagIndex) => (
                           <span
                             key={tagIndex}
-                            className="text-xs text-white/70 font-inter"
+                            className="text-xs text-white/70 font-poppins"
                           >
                             {tag}
                           </span>
@@ -204,14 +204,14 @@ const InteriorInspiration = () => {
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
             viewport={{ once: true }}
-            className="text-gray-600 mb-8 font-inter text-lg"
+            className="text-gray-600 mb-8 font-poppins text-lg"
           >
             Ready to elevate your space?
           </motion.p>
           <motion.button
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="group inline-flex items-center px-10 py-4 text-sm font-medium text-white bg-gray-900 rounded-full hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl font-inter"
+            className="group inline-flex items-center px-10 py-4 text-sm font-medium text-white bg-gray-900 rounded-full hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl font-poppins"
           >
             <span className="relative z-10">Explore Our Collection</span>
             <motion.svg

@@ -41,7 +41,7 @@ const BrandStory = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ once: true }}
-              className="text-3xl lg:text-4xl font-light text-gray-900 mb-6 leading-tight font-playfair"
+              className="text-4xl lg:text-5xl font-light text-gray-900 mb-6 leading-tight font-playfair"
             >
               Our Story
             </motion.h2>
@@ -85,7 +85,7 @@ const BrandStory = () => {
                 className="group relative inline-flex items-center px-8 py-4 text-sm font-medium text-white bg-gray-900 rounded-full overflow-hidden transition-all duration-300 hover:bg-gray-800 shadow-lg hover:shadow-xl"
               >
                 <span className="relative z-10 flex items-center">
-                  Shop Collection
+                  Read Our Story
                   <motion.svg
                     initial={{ x: 0 }}
                     whileHover={{ x: 4 }}

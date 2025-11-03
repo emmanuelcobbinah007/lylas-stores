@@ -82,7 +82,7 @@ const Footer = () => {
                 >
                   <Link
                     href={link.href}
-                    className="text-gray-600 hover:text-gray-900 transition-colors duration-300 font-inter text-sm font-medium px-3 py-2"
+                    className="text-gray-600 hover:text-gray-900 transition-colors duration-300 font-poppins text-sm font-medium px-3 py-2"
                   >
                     {link.label}
                   </Link>
@@ -137,7 +137,7 @@ const Footer = () => {
             viewport={{ once: true }}
             className="pt-8 border-t border-gray-200 w-full text-center"
           >
-            <p className="text-xs text-gray-500 font-inter">
+            <p className="text-xs text-gray-500 font-poppins">
               © {new Date().getFullYear()} Lyia's Stores. All rights reserved.
             </p>
           </motion.div>
