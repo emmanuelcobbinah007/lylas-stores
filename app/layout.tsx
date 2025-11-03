@@ -17,7 +17,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Lyia's Stores - Elegant Home Furnishings",
+  title: "LyLa's Stores - Elegant Home Furnishings",
   description:
     "Discover curated pieces that combine craftsmanship, comfort, and timeless design for your home.",
 };

@@ -44,7 +44,7 @@ const AboutPage = () => {
 
           <p className="text-gray-600 leading-relaxed">
             Whether you're creating a sophisticated living room, an elegant
-            bedroom retreat, or updating your entire home, Lyia's Stores offers
+            bedroom retreat, or updating your entire home, LyLa's Stores offers
             the luxury pieces you need to transform your space into a reflection
             of refined taste and comfort.
           </p>

@@ -53,7 +53,7 @@ const BrandStory = () => {
               viewport={{ once: true }}
               className="text-md lg:text-lg text-gray-700 leading-relaxed mb-8"
             >
-              At Lyia's Stores, we believe every corner of your home deserves a
+              At LyLa's Stores, we believe every corner of your home deserves a
               touch of luxury. Our carefully selected pieces bring together
               exceptional craftsmanship, comfort, and timeless elegance.
             </motion.p>

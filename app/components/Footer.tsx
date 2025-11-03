@@ -60,7 +60,7 @@ const Footer = () => {
             <Link href="/" className="flex items-center">
               <Image
                 src={lylalogolight}
-                alt="Lyia's Stores Logo"
+                alt="LyLa's Stores Logo"
                 width={120}
                 height={120}
                 placeholder="blur"
@@ -142,7 +142,7 @@ const Footer = () => {
             className="pt-8 border-t border-gray-200 w-full text-center"
           >
             <p className="text-xs text-gray-500 font-poppins">
-              © {new Date().getFullYear()} Lyia's Stores. All rights reserved.
+              © {new Date().getFullYear()} LyLa's Stores. All rights reserved.
             </p>
           </motion.div>
           <motion.div>
