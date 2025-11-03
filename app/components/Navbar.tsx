@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ShoppingCart, User } from "lucide-react";
+import lylalogolight from "../../public/Lyla’sLogoLight.png";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -60,9 +62,12 @@ const Navigation = () => {
         >
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <img
-              src="/Lyla’sLogoLight.png"
+            <Image
+              src={lylalogolight}
               alt="Prosupport Logo"
+              width={160}
+              height={160}
+              priority
               className="h-20 w-auto"
             />
           </Link>
@@ -109,11 +114,64 @@ const Navigation = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div
-            className={`fixed inset-0 backdrop-blur-lg bg-black/20 z-40 md:hidden transition-opacity duration-300 ease-out ${
+            className={`fixed inset-0 backdrop-blur-lg bg-white/20 z-40 md:hidden transition-opacity duration-300 ease-out ${
               isAnimating ? "opacity-100" : "opacity-0"
             }`}
             onClick={closeMobileMenu}
-          ></div>
+          >
+            {/* Close Button */}
+            <button
+              onClick={closeMobileMenu}
+              className="absolute top-14 right-8 text-black hover:text-primary-teal transition-colors duration-300 text-xl"
+              aria-label="Close menu"
+            >
+              ✕
+            </button>
+
+            {/* Logo */}
+            <div className="flex justify-center pt-20">
+              <Image
+                src={lylalogolight}
+                alt="Prosupport Logo"
+                width={160}
+                height={160}
+                priority
+                className="h-20 w-auto"
+              />
+            </div>
+
+            {/* Navigation Items */}
+            <div className="flex flex-col items-center justify-center space-y-6 mt-10 h-[50vh]">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-black text-xl font-medium hover:text-primary-teal transition-colors duration-300"
+                  onClick={closeMobileMenu}
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+              {/* Action Icons */}
+              <div className="flex items-center space-x-6 mt-8">
+                <button
+                  className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
+                  onClick={closeMobileMenu}
+                  aria-label="User account"
+                >
+                  <User className="h-6 w-6" />
+                </button>
+                <button
+                  className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
+                  onClick={closeMobileMenu}
+                  aria-label="Shopping cart"
+                >
+                  <ShoppingCart className="h-6 w-6" />
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </header>
