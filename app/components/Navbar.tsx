@@ -8,6 +8,7 @@ import { ShoppingCart, User, Search } from "lucide-react";
 import lylalogolight from "../../public/Lyla’sLogoLight.png";
 import UserModal from "./modals/UserModal";
 import CartModal from "./modals/CartModal";
+import { blurDataURL } from "./ui/ImageShimmer";
 import SearchModal from "./modals/SearchModal";
 
 const Navigation = () => {
@@ -90,10 +91,10 @@ const Navigation = () => {
         }`}
       >
         <nav
-          className={`flex items-center justify-between px-6 py-3 transition-all duration-300 ${
+          className={`flex items-center justify-between px-6 py-2 transition-all duration-300 ${
             isScrolled
-              ? "bg-white/80 backdrop-blur-lg rounded-full shadow-lg border border-gray-200"
-              : "bg-transparent"
+              ? "bg-white/80 backdrop-blur-md rounded-full shadow-sm border border-gray-200"
+              : "bg-transparent border border-gray-50"
           }`}
         >
           {/* Logo */}
@@ -109,6 +110,8 @@ const Navigation = () => {
                 width={160}
                 height={160}
                 priority
+                placeholder="blur"
+                blurDataURL={blurDataURL}
                 className="h-20 w-auto"
               />
             </Link>
@@ -289,6 +292,8 @@ const Navigation = () => {
                   width={160}
                   height={160}
                   priority
+                  placeholder="blur"
+                  blurDataURL={blurDataURL}
                   className="h-20 w-auto"
                 />
               </motion.div>

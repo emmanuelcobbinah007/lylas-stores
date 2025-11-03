@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
+import { blurDataURL } from "./ui/ImageShimmer";
 
 type ProductImage = {
   id: string;
@@ -54,6 +55,8 @@ export default function ProductImageGallery({
               fill
               className="object-cover"
               priority
+              placeholder="blur"
+              blurDataURL={blurDataURL}
             />
           </motion.div>
         </AnimatePresence>
@@ -111,6 +114,8 @@ export default function ProductImageGallery({
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 25vw, 15vw"
+                placeholder="blur"
+                blurDataURL={blurDataURL}
               />
             </button>
           ))}
@@ -141,6 +146,8 @@ export default function ProductImageGallery({
                 className="object-contain"
                 sizes="100vw"
                 priority
+                placeholder="blur"
+                blurDataURL={blurDataURL}
               />
               <button
                 onClick={() => setIsZoomed(false)}

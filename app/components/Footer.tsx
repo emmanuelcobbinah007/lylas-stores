@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import lylalogolight from "../../public/Lyla’sLogoLight.png";
 import AuroraLogo from "../../public/AuroraLogo.png";
+import { blurDataURL } from "./ui/ImageShimmer";
 
 const Footer = () => {
   const quickLinks = [
@@ -62,6 +63,8 @@ const Footer = () => {
                 alt="Lyia's Stores Logo"
                 width={120}
                 height={120}
+                placeholder="blur"
+                blurDataURL={blurDataURL}
                 className="h-16 w-auto opacity-90"
               />
             </Link>
@@ -143,13 +146,21 @@ const Footer = () => {
             </p>
           </motion.div>
           <motion.div>
-            <Image
-              src={AuroraLogo}
-              alt="Aurora Logo"
-              width={120}
-              height={120}
-              className="h-30 w-auto opacity-90"
-            />
+            <Link
+              href="https://aurorasoftwarelabs.io/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                src={AuroraLogo}
+                alt="Aurora Logo"
+                width={120}
+                height={120}
+                placeholder="blur"
+                blurDataURL={blurDataURL}
+                className="h-30 w-auto opacity-90"
+              />
+            </Link>
           </motion.div>
         </div>
       </div>

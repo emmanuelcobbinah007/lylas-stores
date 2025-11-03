@@ -15,7 +15,7 @@ const AboutPage = () => {
         transition={{ duration: 0.8, delay: 0.2 }}
         className="max-w-4xl mx-auto px-6 py-16"
       >
-        <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-8">
+        <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-8 font-playfair">
           About LyLa's Stores
         </h1>
 

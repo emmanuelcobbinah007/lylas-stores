@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { motion } from "framer-motion";
+import { blurDataURL } from "./ui/ImageShimmer";
 
 type Product = {
   id: string;
@@ -46,6 +47,8 @@ export default function ProductCard({
             alt={product.name}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            placeholder="blur"
+            blurDataURL={blurDataURL}
             className="object-cover rounded-lg transform group-hover:scale-105 transition-transform duration-700 ease-out"
           />
 

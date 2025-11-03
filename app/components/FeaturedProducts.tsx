@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useRef } from "react";
+import { blurDataURL } from "./ui/ImageShimmer";
 
 // Mock product data - replace with your actual product data
 const featuredProducts = [
@@ -103,6 +104,9 @@ const FeaturedProducts = () => {
                   src={product.image}
                   alt={product.name}
                   fill
+                  priority={index < 2} // Priority for first two images
+                  placeholder="blur"
+                  blurDataURL={blurDataURL}
                   className="object-cover rounded-lg transform group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
 

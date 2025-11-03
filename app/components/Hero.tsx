@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import LylaPic from "../../public/LylaPic.jpg";
+import { blurDataURL } from "./ui/ImageShimmer";
 
 const Hero = () => {
   return (
@@ -23,6 +24,8 @@ const Hero = () => {
             src={LylaPic}
             alt="Lyla"
             priority
+            placeholder="blur"
+            blurDataURL={blurDataURL}
             className="w-full h-[80vh] object-cover"
           />
         </motion.div>
