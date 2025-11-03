@@ -62,7 +62,7 @@ const FeaturedProducts = () => {
             viewport={{ once: true }}
             className="text-3xl lg:text-4xl font-light text-gray-900 mb-4 font-playfair"
           >
-            Featured Collection
+            Bestselling Pieces
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -71,8 +71,8 @@ const FeaturedProducts = () => {
             viewport={{ once: true }}
             className="text-lg text-gray-600 max-w-2xl mx-auto font-inter"
           >
-            Discover our carefully curated bestsellers that define modern
-            elegance
+            Our most coveted home decor pieces, loved by customers for their
+            exceptional quality and timeless appeal
           </motion.p>
         </motion.div>
 
@@ -155,7 +155,7 @@ const FeaturedProducts = () => {
             whileTap={{ scale: 0.95 }}
             className="group inline-flex items-center px-8 py-3 text-sm font-medium text-gray-900 border border-gray-300 rounded-full hover:border-gray-900 transition-all duration-300 font-inter"
           >
-            <span className="relative z-10">View All Products</span>
+            <span className="relative z-10">Shop All</span>
             <motion.svg
               initial={{ x: 0 }}
               whileHover={{ x: 4 }}

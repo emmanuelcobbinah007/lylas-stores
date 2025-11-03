@@ -43,8 +43,8 @@ const NewsletterCTA = () => {
             viewport={{ once: true }}
             className="text-lg lg:text-xl text-gray-700 leading-relaxed max-w-2xl mx-auto font-inter"
           >
-            Exclusive access to new collections and seasonal curation. Be the
-            first to discover pieces that transform spaces into sanctuaries.
+            Exclusive access to new arrivals, limited collections, and special
+            member pricing. Be the first to shop our latest luxury pieces.
           </motion.p>
         </motion.div>
 
@@ -148,8 +148,8 @@ const NewsletterCTA = () => {
                   />
                 </svg>
               ),
-              title: "Early Access",
-              description: "First to discover new arrivals",
+              title: "First Access",
+              description: "Shop new arrivals before anyone else",
             },
             {
               icon: (
@@ -167,8 +167,8 @@ const NewsletterCTA = () => {
                   />
                 </svg>
               ),
-              title: "Curated Inspiration",
-              description: "Seasonal styling guides & tips",
+              title: "Style Guide",
+              description: "Seasonal decor trends & inspiration",
             },
             {
               icon: (
@@ -186,8 +186,8 @@ const NewsletterCTA = () => {
                   />
                 </svg>
               ),
-              title: "Exclusive Offers",
-              description: "Member-only pricing & previews",
+              title: "VIP Pricing",
+              description: "Exclusive discounts & member sales",
             },
           ].map((benefit, index) => (
             <motion.div
@@ -220,7 +220,7 @@ const NewsletterCTA = () => {
           className="mt-8 text-xs text-gray-500 font-inter"
         >
           We respect your privacy. Unsubscribe at any time. No spam, just
-          beautiful design inspiration.
+          exclusive offers and luxury home inspiration.
         </motion.p>
       </div>
     </section>

@@ -88,9 +88,9 @@ const InteriorInspiration = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="text-3xl lg:text-4xl font-light text-gray-900 mb-4 font-playfair"
+            className="text-4xl lg:text-5xl font-light text-gray-900 mb-4 font-playfair"
           >
-            See How They Style It
+            Style Inspiration
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -99,8 +99,8 @@ const InteriorInspiration = () => {
             viewport={{ once: true }}
             className="text-lg text-gray-600 max-w-2xl mx-auto font-inter"
           >
-            Real homes, real stories. Discover how our pieces transform everyday
-            spaces into extraordinary sanctuaries.
+            See how our luxury pieces transform real homes into stunning
+            showcases of sophisticated living.
           </motion.p>
         </motion.div>
 
@@ -206,14 +206,14 @@ const InteriorInspiration = () => {
             viewport={{ once: true }}
             className="text-gray-600 mb-8 font-inter text-lg"
           >
-            Ready to create your own story?
+            Ready to elevate your space?
           </motion.p>
           <motion.button
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
             className="group inline-flex items-center px-10 py-4 text-sm font-medium text-white bg-gray-900 rounded-full hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl font-inter"
           >
-            <span className="relative z-10">Book a Design Consultation</span>
+            <span className="relative z-10">Explore Our Collection</span>
             <motion.svg
               initial={{ x: 0 }}
               whileHover={{ x: 4 }}

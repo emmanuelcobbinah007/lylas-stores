@@ -22,31 +22,31 @@ const AboutPage = () => {
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-700 leading-relaxed mb-8">
             At LyLa's Stores, we believe every corner of your home deserves a
-            touch of elegance. Our curated pieces combine craftsmanship,
-            comfort, and timeless design.
+            touch of luxury. Our carefully selected pieces bring together
+            exceptional craftsmanship, comfort, and timeless elegance.
           </p>
 
           <p className="text-gray-600 leading-relaxed mb-6">
-            Founded with a passion for transforming spaces, we carefully select
-            each piece in our collection to ensure it meets our high standards
-            of quality and aesthetic appeal. From modern minimalist designs to
-            classic statement pieces, we offer furniture and décor that speaks
-            to diverse tastes while maintaining a cohesive sense of
-            sophistication.
+            Founded with a passion for luxury home decor, we curate an exclusive
+            collection of furniture, lighting, textiles, and accessories from
+            renowned artisans and premium manufacturers worldwide. Each piece is
+            selected for its exceptional quality, sophisticated design, and
+            ability to elevate any living space.
           </p>
 
           <p className="text-gray-600 leading-relaxed mb-6">
-            Our team travels the world to source unique pieces from skilled
-            artisans and established manufacturers who share our commitment to
-            excellence. We believe that great design should be accessible,
-            durable, and meaningful – creating spaces that not only look
-            beautiful but feel like home.
+            From statement furniture pieces to carefully crafted accessories,
+            our collection spans contemporary luxury to timeless classics. We
+            source directly from skilled craftspeople and established luxury
+            brands, ensuring authenticity and the highest standards of quality
+            in every piece we offer.
           </p>
 
           <p className="text-gray-600 leading-relaxed">
-            Whether you're furnishing your first apartment or redesigning a
-            cherished family home, Lyia's Stores is here to help you create
-            spaces that reflect your personality and enhance your daily life.
+            Whether you're creating a sophisticated living room, an elegant
+            bedroom retreat, or updating your entire home, Lyia's Stores offers
+            the luxury pieces you need to transform your space into a reflection
+            of refined taste and comfort.
           </p>
         </div>
       </motion.div>

@@ -54,8 +54,8 @@ const BrandStory = () => {
               className="text-md lg:text-lg text-gray-700 leading-relaxed mb-8"
             >
               At Lyia's Stores, we believe every corner of your home deserves a
-              touch of elegance. Our curated pieces combine craftsmanship,
-              comfort, and timeless design.
+              touch of luxury. Our carefully selected pieces bring together
+              exceptional craftsmanship, comfort, and timeless elegance.
             </motion.p>
 
             <motion.p
@@ -65,9 +65,9 @@ const BrandStory = () => {
               viewport={{ once: true }}
               className="text-base text-gray-600 leading-relaxed"
             >
-              Each piece in our collection tells a story of dedication to
-              quality and an unwavering commitment to transforming houses into
-              homes that reflect your unique style and personality.
+              From statement furniture to refined accessories, discover pieces
+              that elevate your living spaces with sophisticated style and
+              enduring quality.
             </motion.p>
           </div>
 
@@ -85,7 +85,7 @@ const BrandStory = () => {
                 className="group relative inline-flex items-center px-8 py-4 text-sm font-medium text-white bg-gray-900 rounded-full overflow-hidden transition-all duration-300 hover:bg-gray-800 shadow-lg hover:shadow-xl"
               >
                 <span className="relative z-10 flex items-center">
-                  Discover More
+                  Shop Collection
                   <motion.svg
                     initial={{ x: 0 }}
                     whileHover={{ x: 4 }}
