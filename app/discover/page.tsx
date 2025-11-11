@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import ProductCard from "@/app/components/ProductCard";
+import ProductCard from "../components/ProductCard";
 import Link from "next/link";
 
 type Product = {

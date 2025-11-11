@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Settings, ShoppingBag, Heart, LogOut } from "lucide-react";
+import Link from "next/link";
 
 type LoggedInViewProps = {
   user: {
@@ -10,9 +11,14 @@ type LoggedInViewProps = {
     email: string;
   };
   onLogout: () => void;
+  onClose: () => void;
 };
 
-export default function LoggedInView({ user, onLogout }: LoggedInViewProps) {
+export default function LoggedInView({
+  user,
+  onLogout,
+  onClose,
+}: LoggedInViewProps) {
   return (
     <div className="space-y-6">
       {/* User Info */}
@@ -35,17 +41,28 @@ export default function LoggedInView({ user, onLogout }: LoggedInViewProps) {
 
       {/* Menu Items */}
       <div className="space-y-2">
-        <button className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-          <ShoppingBag className="w-5 h-5 text-gray-600" />
-          <span className="font-poppins text-gray-900">My Orders</span>
-        </button>
+        <Link href="/orders">
+          <button
+            className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+            onClick={onClose}
+          >
+            <ShoppingBag className="w-5 h-5 text-gray-600" />
+            <span className="font-poppins text-gray-900">My Orders</span>
+          </button>
+        </Link>
 
-        <button className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+        <button
+          className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+          onClick={onClose}
+        >
           <Heart className="w-5 h-5 text-gray-600" />
           <span className="font-poppins text-gray-900">Wishlist</span>
         </button>
 
-        <button className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+        <button
+          className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+          onClick={onClose}
+        >
           <Settings className="w-5 h-5 text-gray-600" />
           <span className="font-poppins text-gray-900">Account Settings</span>
         </button>

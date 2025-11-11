@@ -3,6 +3,9 @@ import { Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Providers from "./providers";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -32,9 +35,12 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} ${playfairDisplay.variable} antialiased`}
       >
-        <Navbar />
-        {children}
-        <Footer />
+        <Providers>
+          <Navbar />
+          {children}
+          <Footer />
+          <ToastContainer />
+        </Providers>
       </body>
     </html>
   );

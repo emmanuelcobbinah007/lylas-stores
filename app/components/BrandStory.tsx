@@ -54,7 +54,7 @@ const BrandStory = () => {
               className="text-md lg:text-lg text-gray-700 leading-relaxed mb-8"
             >
               At LyLa's Stores, we believe every corner of your home deserves a
-              touch of luxury. Our carefully selected pieces bring together
+              touch of class. Our carefully selected pieces bring together
               exceptional craftsmanship, comfort, and timeless elegance.
             </motion.p>
 

@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowLeft } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
+import axios from "axios";
 import {
   SigninForm,
   SignupForm,
@@ -21,10 +24,35 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
   const [currentView, setCurrentView] = useState<ViewState>("signin");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{
-    firstName: string;
-    lastName: string;
+    id: string;
     email: string;
+    firstname: string;
+    lastname: string;
+    phone?: string;
+    role: string;
   } | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const token = localStorage.getItem("token");
+      const userStr = localStorage.getItem("user");
+      if (token && userStr) {
+        try {
+          // Decode token to check expiry (optional)
+          jwtDecode(token);
+          const storedUser = JSON.parse(userStr);
+          setUser(storedUser);
+          setIsLoggedIn(true);
+          setCurrentView("logged-in");
+        } catch (error) {
+          // Invalid or expired token
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setCurrentView("signin");
+        }
+      }
+    }
+  }, [isOpen]);
 
   const resetModal = () => {
     setCurrentView("signin");
@@ -37,23 +65,15 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
 
   const handleSignin = async (values: { email: string; password: string }) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock successful login
-      setUser({
-        firstName: "John",
-        lastName: "Doe",
-        email: values.email,
-      });
+      const response = await axios.post("/api/auth/login", values);
+      const { token, user } = response.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      setUser(user);
       setIsLoggedIn(true);
-
-      // Add a small delay for smooth transition
-      setTimeout(() => {
-        setCurrentView("logged-in");
-      }, 100);
-    } catch (error) {
-      console.error("Signin error:", error);
+      setCurrentView("logged-in");
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Login failed");
     }
   };
 
@@ -61,26 +81,28 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
     firstName: string;
     lastName: string;
     email: string;
+    phone: string;
     password: string;
+    confirmPassword: string;
   }) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock successful signup
-      setUser({
-        firstName: values.firstName,
-        lastName: values.lastName,
+      const response = await axios.post("/api/auth/signup", {
+        firstname: values.firstName,
+        lastname: values.lastName,
         email: values.email,
+        phone: values.phone,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
+        storefront: "LYLA",
       });
+      const { token, user } = response.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      setUser(user);
       setIsLoggedIn(true);
-
-      // Add a small delay for smooth transition
-      setTimeout(() => {
-        setCurrentView("logged-in");
-      }, 100);
-    } catch (error) {
-      console.error("Signup error:", error);
+      setCurrentView("logged-in");
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Signup failed");
     }
   };
 
@@ -88,17 +110,21 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert("Password reset email sent!");
+      toast.success("Password reset email sent!");
       setCurrentView("signin");
     } catch (error) {
       console.error("Forgot password error:", error);
+      toast.error("Failed to send reset email");
     }
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsLoggedIn(false);
     setUser(null);
     setCurrentView("signin");
+    onClose(); // Close the modal after logout
   };
 
   const renderHeader = () => {
@@ -171,7 +197,9 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                   <SigninForm
                     onSignin={handleSignin}
                     onSwitchToSignup={() => setCurrentView("signup")}
-                    onSwitchToForgotPassword={() => setCurrentView("forgot-password")}
+                    onSwitchToForgotPassword={() =>
+                      setCurrentView("forgot-password")
+                    }
                   />
                 );
               case "signup":
@@ -187,14 +215,24 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                 );
               case "logged-in":
                 return user ? (
-                  <LoggedInView user={user} onLogout={handleLogout} />
+                  <LoggedInView
+                    user={{
+                      firstName: user.firstname,
+                      lastName: user.lastname,
+                      email: user.email,
+                    }}
+                    onLogout={handleLogout}
+                    onClose={onClose}
+                  />
                 ) : null;
               default:
                 return (
                   <SigninForm
                     onSignin={handleSignin}
                     onSwitchToSignup={() => setCurrentView("signup")}
-                    onSwitchToForgotPassword={() => setCurrentView("forgot-password")}
+                    onSwitchToForgotPassword={() =>
+                      setCurrentView("forgot-password")
+                    }
                   />
                 );
             }
