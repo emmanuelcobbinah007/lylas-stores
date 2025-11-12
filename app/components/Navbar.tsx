@@ -5,11 +5,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, User, Search } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import lylalogolight from "../../public/Lyla’sLogoLight.png";
 import UserModal from "./modals/UserModal";
 import CartModal from "./modals/CartModal";
 import { blurDataURL } from "./ui/ImageShimmer";
 import SearchModal from "./modals/SearchModal";
+
+type CategoryItem = {
+  label: string;
+  href: string;
+};
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -18,6 +25,16 @@ const Navigation = () => {
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [categories, setCategories] = useState<CategoryItem[]>([
+    { href: "/discover?category=living-room", label: "Living Room" },
+    { href: "/discover?category=bedroom", label: "Bedroom" },
+    { href: "/discover?category=kitchen", label: "Kitchen" },
+    { href: "/discover?category=bathroom", label: "Bathroom" },
+    { href: "/discover?category=outdoor", label: "Outdoor" },
+    { href: "/discover?category=decor", label: "Decor" },
+    { href: "/discover?category=lighting", label: "Lighting" },
+    { href: "/discover?category=storage", label: "Storage" },
+  ]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,21 +44,34 @@ const Navigation = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Fetch categories
+  const { data: categoriesData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const response = await axios.get("/api/categories");
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  useEffect(() => {
+    if (categoriesData) {
+      const fetchedCategories: CategoryItem[] = categoriesData.map(
+        (cat: any) => ({
+          label: cat.name,
+          href: `/discover?category=${
+            cat.slug || cat.name.toLowerCase().replace(/\s+/g, "-")
+          }`,
+        })
+      );
+      setCategories(fetchedCategories);
+    }
+  }, [categoriesData]);
+
   const navItems = [
     { href: "/discover", label: "Discover" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
-  ];
-
-  const categories = [
-    { href: "/discover?category=living-room", label: "Living Room" },
-    { href: "/discover?category=bedroom", label: "Bedroom" },
-    { href: "/discover?category=kitchen", label: "Kitchen" },
-    { href: "/discover?category=bathroom", label: "Bathroom" },
-    { href: "/discover?category=outdoor", label: "Outdoor" },
-    { href: "/discover?category=decor", label: "Decor" },
-    { href: "/discover?category=lighting", label: "Lighting" },
-    { href: "/discover?category=storage", label: "Storage" },
   ];
 
   const toggleMobileMenu = () => {
