@@ -34,25 +34,22 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
 
   useEffect(() => {
     if (isOpen) {
-      const token = localStorage.getItem("token");
-      const userStr = localStorage.getItem("user");
-      if (token && userStr) {
-        try {
-          // Decode token to check expiry (optional)
-          jwtDecode(token);
-          const storedUser = JSON.parse(userStr);
-          setUser(storedUser);
-          setIsLoggedIn(true);
-          setCurrentView("logged-in");
-        } catch (error) {
-          // Invalid or expired token
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          setCurrentView("signin");
-        }
-      }
+      checkAuthStatus();
     }
   }, [isOpen]);
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await axios.get("/api/auth/me");
+      const { user } = response.data;
+      setUser(user);
+      setIsLoggedIn(true);
+      setCurrentView("logged-in");
+    } catch (error) {
+      setIsLoggedIn(false);
+      setCurrentView("signin");
+    }
+  };
 
   const resetModal = () => {
     setCurrentView("signin");
@@ -65,13 +62,10 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
 
   const handleSignin = async (values: { email: string; password: string }) => {
     try {
-      const response = await axios.post("/api/auth/login", values);
-      const { token, user } = response.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      setUser(user);
-      setIsLoggedIn(true);
-      setCurrentView("logged-in");
+      await axios.post("/api/auth/login", values);
+      // Since login sets the cookie, check auth status
+      await checkAuthStatus();
+      toast.success("Login successful!");
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Login failed");
     }
@@ -86,7 +80,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
     confirmPassword: string;
   }) => {
     try {
-      const response = await axios.post("/api/auth/signup", {
+      await axios.post("/api/auth/signup", {
         firstname: values.firstName,
         lastname: values.lastName,
         email: values.email,
@@ -95,12 +89,9 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
         confirmPassword: values.confirmPassword,
         storefront: "LYLA",
       });
-      const { token, user } = response.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      setUser(user);
-      setIsLoggedIn(true);
-      setCurrentView("logged-in");
+      // Since signup sets the cookie, check auth status
+      await checkAuthStatus();
+      toast.success("Account created successfully!");
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Signup failed");
     }
@@ -118,13 +109,23 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
-    setUser(null);
-    setCurrentView("signin");
-    onClose(); // Close the modal after logout
+  const handleLogout = async () => {
+    try {
+      await axios.post("/api/auth/logout");
+      setIsLoggedIn(false);
+      setUser(null);
+      setCurrentView("signin");
+      onClose(); // Close the modal after logout
+      toast.success("Logged out successfully!");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Still reset locally
+      setIsLoggedIn(false);
+      setUser(null);
+      setCurrentView("signin");
+      onClose();
+      toast.success("Logged out successfully!");
+    }
   };
 
   const renderHeader = () => {

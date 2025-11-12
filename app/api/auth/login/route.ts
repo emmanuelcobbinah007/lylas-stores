@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { PrismaClient } from "@/generated/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
+const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,20 +57,10 @@ export async function POST(request: NextRequest) {
       { expiresIn: "7d" }
     );
 
-    // Return success response (you might want to add JWT token generation here later)
-    console.log("Login API: user from database:", {
-      id: user.id,
-      email: user.email,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      phone: user.phone,
-      role: user.role,
-    });
-
-    return NextResponse.json(
+    // Create response with token in cookie
+    const response = NextResponse.json(
       {
         message: "Login successful",
-        token,
         user: {
           id: user.id,
           email: user.email,
@@ -80,6 +72,25 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
+
+    // Set token in httpOnly cookie
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    console.log("Login API: user from database:", {
+      id: user.id,
+      email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      phone: user.phone,
+      role: user.role,
+    });
+
+    return response;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(

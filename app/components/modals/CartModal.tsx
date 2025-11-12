@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
 import {
   X,
   Plus,
@@ -15,11 +16,20 @@ import {
 
 type CartItem = {
   id: string;
-  name: string;
-  price: number;
   quantity: number;
-  image: string;
-  category: string;
+  size: string | null;
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    images: { url: string }[];
+    category: { name: string };
+  };
+};
+
+type Cart = {
+  id: string;
+  cartItems: CartItem[];
 };
 
 type CartModalProps = {
@@ -31,58 +41,101 @@ type ViewState = "cart" | "checkout";
 
 export default function CartModal({ isOpen, onClose }: CartModalProps) {
   const [currentView, setCurrentView] = useState<ViewState>("cart");
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "Elegant Ceramic Vase",
-      price: 129.0,
-      quantity: 1,
-      image: "/placeholder-image.jpg",
-      category: "Decor",
-    },
-    {
-      id: "2",
-      name: "Modern Floor Lamp",
-      price: 289.0,
-      quantity: 2,
-      image: "/placeholder-image.jpg",
-      category: "Lighting",
-    },
-    {
-      id: "3",
-      name: "Luxury Throw Pillow",
-      price: 79.0,
-      quantity: 3,
-      image: "/placeholder-image.jpg",
-      category: "Living Room",
-    },
-  ]);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [cart, setCart] = useState<Cart | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity === 0) {
-      removeItem(id);
-      return;
+  useEffect(() => {
+    if (isOpen) {
+      fetchUserAndCart();
     }
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  }, [isOpen]);
+
+  const fetchUserAndCart = async () => {
+    setLoading(true);
+    try {
+      const userRes = await fetch("/api/auth/me");
+      if (userRes.ok) {
+        const { user } = await userRes.json();
+        setUser(user);
+        setIsLoggedIn(true);
+
+        // Fetch cart
+        const cartRes = await fetch(`/api/cart?userId=${user.id}`);
+        if (cartRes.ok) {
+          const { cart: cartData } = await cartRes.json();
+          setCart(cartData);
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
+    } catch (error) {
+      console.error("Error fetching user/cart:", error);
+      setIsLoggedIn(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const removeItem = (id: string) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
+  const updateQuantity = async (id: string, newQuantity: number) => {
+    if (!cart || !user) return;
+
+    if (newQuantity === 0) {
+      await removeItem(id);
+      return;
+    }
+
+    try {
+      // Update local state
+      setCart((prev) =>
+        prev
+          ? {
+              ...prev,
+              cartItems: prev.cartItems.map((item) =>
+                item.id === id ? { ...item, quantity: newQuantity } : item
+              ),
+            }
+          : null
+      );
+
+      // TODO: Call API to update in DB
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+    }
+  };
+
+  const removeItem = async (id: string) => {
+    if (!cart || !user) return;
+
+    try {
+      setCart((prev) =>
+        prev
+          ? {
+              ...prev,
+              cartItems: prev.cartItems.filter((item) => item.id !== id),
+            }
+          : null
+      );
+
+      // TODO: Call API to remove from DB
+    } catch (error) {
+      console.error("Error removing item:", error);
+    }
   };
 
   const getTotalPrice = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
+    return (cart?.cartItems || []).reduce(
+      (total, item) => total + item.product.price * item.quantity,
       0
     );
   };
 
   const getTotalItems = () => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0);
+    return (cart?.cartItems || []).reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
   };
 
   const handleClose = () => {
@@ -91,6 +144,8 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
   };
 
   const renderCheckoutView = () => {
+    const items = cart?.cartItems || [];
+
     return (
       <>
         {/* Checkout Form */}
@@ -102,13 +157,13 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
                 Order Summary
               </h3>
               <div className="space-y-2">
-                {cartItems.map((item) => (
+                {items.map((item) => (
                   <div key={item.id} className="flex justify-between text-sm">
                     <span className="text-gray-600 font-poppins">
-                      {item.name} × {item.quantity}
+                      {item.product.name} × {item.quantity}
                     </span>
                     <span className="text-gray-900 font-poppins">
-                      ₵{(item.price * item.quantity).toFixed(2)}
+                      ₵{(item.product.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -233,8 +288,8 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
           <button
             onClick={() => {
               // Simulate order placement
-              alert("Order placed successfully!");
-              setCartItems([]);
+              toast.success("Order placed successfully!");
+              setCart(null);
               setCurrentView("cart");
               handleClose();
             }}
@@ -252,7 +307,38 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
   };
 
   const renderCartView = () => {
-    if (cartItems.length === 0) {
+    const items = cart?.cartItems || [];
+
+    if (loading) {
+      return (
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-500 font-poppins">Loading cart...</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (isLoggedIn === false) {
+      return (
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <X className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-poppins font-medium text-gray-900 mb-2">
+              Please log in to view your cart
+            </h3>
+            <p className="text-gray-500 font-poppins text-sm">
+              Sign in to access your shopping cart
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    if (items.length === 0) {
       return (
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="text-center">
@@ -275,7 +361,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
         {/* Cart Items */}
         <div className="flex-1 p-6 overflow-y-auto">
           <div className="space-y-4">
-            {cartItems.map((item) => (
+            {items.map((item) => (
               <motion.div
                 key={item.id}
                 layout
@@ -286,23 +372,31 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
               >
                 {/* Product Image */}
                 <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <span className="text-xs text-gray-400 font-poppins">
-                      IMG
-                    </span>
-                  </div>
+                  {item.product.images && item.product.images.length > 0 ? (
+                    <img
+                      src={item.product.images[0].url}
+                      alt={item.product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                      <span className="text-xs text-gray-400 font-poppins">
+                        IMG
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Product Details */}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-poppins font-medium text-gray-900 truncate">
-                    {item.name}
+                    {item.product.name}
                   </h3>
                   <p className="text-sm text-gray-500 font-poppins">
-                    {item.category}
+                    {item.product.category.name}
                   </p>
                   <p className="text-lg font-poppins font-semibold text-gray-900 mt-1">
-                    ₵{item.price.toFixed(2)}
+                    ₵{item.product.price.toFixed(2)}
                   </p>
                 </div>
 
