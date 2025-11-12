@@ -101,7 +101,13 @@ export default async function ProductPage({ params }: Props) {
                 {/* Product Images */}
                 <div>
                   <ProductImageGallery
-                    images={product.images}
+                    images={product.images.map(
+                      (url: string, index: number) => ({
+                        id: `image-${index}`,
+                        src: url,
+                        alt: `${product.name} - Image ${index + 1}`,
+                      })
+                    )}
                     productName={product.name}
                   />
                 </div>

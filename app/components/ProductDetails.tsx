@@ -2,7 +2,14 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Star, Heart, Share2, Truck, Shield, RotateCcw } from "lucide-react";
+import {
+  Star,
+  Share2,
+  Truck,
+  Shield,
+  RotateCcw,
+  ShoppingBag,
+} from "lucide-react";
 
 type ProductDetailsProps = {
   product: {
@@ -17,12 +24,12 @@ type ProductDetailsProps = {
     specifications: { [key: string]: string };
     inStock: boolean;
     category: string;
+    images: string[];
   };
 };
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity >= 1) {
@@ -35,17 +42,40 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     console.log(`Added ${quantity} of ${product.name} to cart`);
   };
 
-  const handleWishlist = () => {
-    setIsWishlisted(!isWishlisted);
+  const handleBuyNow = () => {
+    // Buy now logic here
+    console.log(`Buy Now clicked for ${quantity} of ${product.name}`);
+    // Could redirect to checkout or process immediate purchase
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
+    const shareData = {
+      title: `${product.name} - ${product.description}`,
+      text: "",
+      url: window.location.href,
+    };
+
     if (navigator.share) {
-      navigator.share({
-        title: product.name,
-        text: product.description,
-        url: window.location.href,
-      });
+      try {
+        // Try to share with image if available
+        if (product.images && product.images.length > 0) {
+          const imageUrl = product.images[0];
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], `${product.name}-thumbnail.jpg`, {
+            type: blob.type,
+          });
+          await navigator.share({
+            ...shareData,
+            files: [file],
+          });
+        } else {
+          await navigator.share(shareData);
+        }
+      } catch (error) {
+        // Fallback: copy URL to clipboard
+        navigator.clipboard.writeText(window.location.href);
+      }
     } else {
       // Fallback: copy URL to clipboard
       navigator.clipboard.writeText(window.location.href);
@@ -89,14 +119,20 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
         {/* Price */}
         <div className="flex items-baseline gap-3 mb-6">
-          <span className="text-2xl md:text-3xl font-playfair text-gray-900">
-            {product.price}
-          </span>
-          {product.originalPrice && (
-            <span className="text-lg text-gray-500 line-through font-poppins">
+          {product.price ? (
+            <span className="text-2xl md:text-3xl font-playfair text-gray-900">
+              {product.price}
+            </span>
+          ) : (
+            <span className="text-2xl md:text-3xl font-playfair text-gray-900">
               {product.originalPrice}
             </span>
           )}
+          {product.price ? (
+            <span className="text-lg text-gray-500 line-through font-poppins">
+              {product.originalPrice}
+            </span>
+          ) : null}
         </div>
 
         {/* Stock Status */}
@@ -157,18 +193,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
           <div className="flex gap-2">
             <motion.button
-              onClick={handleWishlist}
+              onClick={handleBuyNow}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`w-12 h-12 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${
-                isWishlisted
-                  ? "border-red-500 text-red-500 bg-red-50"
-                  : "border-gray-200 text-gray-600 hover:border-gray-400"
-              }`}
+              className="px-4 py-2 rounded-lg border-2 border-gray-200 text-gray-600 hover:border-gray-400 flex items-center gap-2 transition-all duration-200 font-poppins text-sm"
             >
-              <Heart
-                className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`}
-              />
+              <ShoppingBag className="w-4 h-4" />
+              Buy Now
             </motion.button>
 
             <motion.button
@@ -218,25 +249,31 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       </motion.div>
 
       {/* Specifications */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.8 }}
-        className="space-y-4"
-      >
-        <h3 className="text-lg font-playfair text-gray-900">Specifications</h3>
-        <div className="space-y-3">
-          {Object.entries(product.specifications).map(([key, value]) => (
-            <div
-              key={key}
-              className="flex justify-between py-2 border-b border-gray-100"
-            >
-              <span className="text-gray-600 font-poppins">{key}</span>
-              <span className="text-gray-900 font-poppins">{value}</span>
+      {product.specifications &&
+        product.specifications !== null &&
+        Object.keys(product.specifications).length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="space-y-4"
+          >
+            <h3 className="text-lg font-playfair text-gray-900">
+              Specifications
+            </h3>
+            <div className="space-y-3">
+              {Object.entries(product.specifications).map(([key, value]) => (
+                <div
+                  key={key}
+                  className="flex justify-between py-2 border-b border-gray-100"
+                >
+                  <span className="text-gray-600 font-poppins">{key}</span>
+                  <span className="text-gray-900 font-poppins">{value}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </motion.div>
+          </motion.div>
+        )}
 
       {/* Shipping & Returns */}
       <motion.div

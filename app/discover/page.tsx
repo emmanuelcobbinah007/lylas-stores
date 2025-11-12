@@ -30,6 +30,7 @@ const categoryMap: { [key: string]: string } = {
   lighting: "Lighting",
   storage: "Storage",
   dining: "Dining",
+  "on-sale": "On Sale",
 };
 
 // Component that handles search params (needs to be wrapped in Suspense)
@@ -114,6 +115,10 @@ function DiscoverContent() {
     if (!productsData) return;
     if (category === "All") {
       setFilteredProducts(productsData);
+    } else if (category === "On Sale") {
+      setFilteredProducts(
+        productsData.filter((product: Product) => product.isOnSale)
+      );
     } else {
       // Use category ID for filtering
       const categoryId = categoryNameToIdMap[category];
@@ -149,6 +154,7 @@ function DiscoverContent() {
                   "Decor",
                   "Lighting",
                   "Storage",
+                  "On Sale",
                 ].map((category) => (
                   <button
                     key={category}
@@ -204,6 +210,7 @@ function DiscoverContent() {
                 "Decor",
                 "Lighting",
                 "Storage",
+                "On Sale",
               ].map((category) => (
                 <button
                   key={category}

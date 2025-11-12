@@ -61,11 +61,14 @@ export async function GET(
     const transformedProduct = {
       id: product.id,
       name: product.name,
-      price: `₵${product.price.toFixed(2)}`,
-      originalPrice:
+      price:
         product.salePercent > 0
-          ? `₵${(product.price / (1 - product.salePercent / 100)).toFixed(2)}`
+          ? `₵${(
+              product.price -
+              (product.price * product.salePercent) / 100
+            ).toFixed(2)}`
           : undefined,
+      originalPrice: `₵${product.price.toFixed(2)}`,
       image: product.images[0]?.url || "/images/placeholder.jpg",
       images: product.images.map((img) => img.url),
       description: product.descriptionLong || product.descriptionShort,
