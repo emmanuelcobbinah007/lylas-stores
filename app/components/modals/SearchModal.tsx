@@ -275,6 +275,7 @@ export default function SearchModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="flex flex-col h-full p-6"
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Search Bar */}
           <div className="flex items-center gap-4 mb-4">

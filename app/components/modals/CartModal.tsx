@@ -563,6 +563,7 @@ export default function CartModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="flex flex-col h-full"
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Dynamic Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">

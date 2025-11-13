@@ -288,6 +288,7 @@ export default function UserModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="flex flex-col h-full"
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           {renderHeader()}
