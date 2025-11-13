@@ -25,6 +25,9 @@ const Navigation = () => {
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [mobileView, setMobileView] = useState<
+    "menu" | "search" | "user" | "cart"
+  >("menu");
   const [categories, setCategories] = useState<CategoryItem[]>([
     { href: "/discover?category=living-room", label: "Living Room" },
     { href: "/discover?category=bedroom", label: "Bedroom" },
@@ -80,6 +83,7 @@ const Navigation = () => {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+    setMobileView("menu");
   };
 
   const openUserModal = () => {
@@ -302,7 +306,11 @@ const Navigation = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
-                onClick={closeMobileMenu}
+                onClick={
+                  mobileView === "menu"
+                    ? closeMobileMenu
+                    : () => setMobileView("menu")
+                }
                 className="absolute top-14 right-8 text-black hover:text-primary-teal transition-colors duration-300 text-xl"
                 aria-label="Close menu"
               >
@@ -328,55 +336,100 @@ const Navigation = () => {
                 />
               </motion.div>
 
-              {/* Navigation Items */}
-              <div className="flex flex-col items-center justify-center space-y-6 mt-10 h-[50vh]">
-                {navItems.map((item, index) => (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
-                  >
-                    <Link
-                      href={item.href}
-                      className="text-black text-xl font-medium hover:text-primary-teal transition-colors duration-300"
-                      onClick={closeMobileMenu}
-                    >
-                      {item.label}
-                    </Link>
-                  </motion.div>
-                ))}
-
-                {/* Action Icons */}
+              <AnimatePresence mode="wait" initial={false}>
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7, duration: 0.4 }}
-                  className="flex items-center space-x-6 mt-8"
+                  key={mobileView}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col h-full"
                 >
-                  <button
-                    className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
-                    onClick={openSearchModal}
-                    aria-label="Search"
-                  >
-                    <Search className="h-6 w-6" />
-                  </button>
-                  <button
-                    className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
-                    onClick={openUserModal}
-                    aria-label="User account"
-                  >
-                    <User className="h-6 w-6" />
-                  </button>
-                  <button
-                    className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
-                    onClick={openCartModal}
-                    aria-label="Shopping cart"
-                  >
-                    <ShoppingCart className="h-6 w-6" />
-                  </button>
+                  {mobileView === "menu" ? (
+                    <>
+                      {/* Navigation Items */}
+                      <div className="flex flex-col items-center justify-center space-y-6 mt-10 h-[50vh]">
+                        {navItems.map((item, index) => (
+                          <motion.div
+                            key={item.href}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                              delay: 0.2 + index * 0.1,
+                              duration: 0.4,
+                            }}
+                          >
+                            <Link
+                              href={item.href}
+                              onClick={closeMobileMenu}
+                              className="text-black hover:text-primary-teal transition-colors duration-300 font-poppins font-medium text-lg"
+                            >
+                              {item.label}
+                            </Link>
+                          </motion.div>
+                        ))}
+
+                        {/* Action Icons */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.7, duration: 0.4 }}
+                          className="flex items-center space-x-6 mt-8"
+                        >
+                          <button
+                            className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setMobileView("search");
+                            }}
+                            aria-label="Search"
+                          >
+                            <Search className="h-6 w-6" />
+                          </button>
+                          <button
+                            className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setMobileView("user");
+                            }}
+                            aria-label="User account"
+                          >
+                            <User className="h-6 w-6" />
+                          </button>
+                          <button
+                            className="p-3 text-black hover:text-primary-teal transition-colors duration-300"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setMobileView("cart");
+                            }}
+                            aria-label="Shopping cart"
+                          >
+                            <ShoppingCart className="h-6 w-6" />
+                          </button>
+                        </motion.div>
+                      </div>
+                    </>
+                  ) : mobileView === "search" ? (
+                    <SearchModal
+                      isOpen={true}
+                      onClose={() => setMobileView("menu")}
+                      isMobileInline={true}
+                    />
+                  ) : mobileView === "user" ? (
+                    <UserModal
+                      isOpen={true}
+                      onClose={() => setMobileView("menu")}
+                      isMobileInline={true}
+                    />
+                  ) : mobileView === "cart" ? (
+                    <CartModal
+                      isOpen={true}
+                      onClose={() => setMobileView("menu")}
+                      isMobileInline={true}
+                    />
+                  ) : null}
                 </motion.div>
-              </div>
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>

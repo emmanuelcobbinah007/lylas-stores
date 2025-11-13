@@ -16,11 +16,16 @@ import {
 type UserModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  isMobileInline?: boolean;
 };
 
 type ViewState = "signin" | "signup" | "forgot-password" | "logged-in";
 
-export default function UserModal({ isOpen, onClose }: UserModalProps) {
+export default function UserModal({
+  isOpen,
+  onClose,
+  isMobileInline = false,
+}: UserModalProps) {
   const [currentView, setCurrentView] = useState<ViewState>("signin");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{
@@ -245,7 +250,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isOpen && !isMobileInline && (
         <>
           {/* White overlay for clicking outside to close */}
           <motion.div
@@ -276,6 +281,20 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
             <div className="flex-1 p-6 overflow-y-auto">{renderContent()}</div>
           </motion.div>
         </>
+      )}
+      {isMobileInline && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="flex flex-col h-full"
+        >
+          {/* Header */}
+          {renderHeader()}
+
+          {/* Content */}
+          <div className="flex-1 p-6 overflow-y-auto">{renderContent()}</div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

@@ -35,11 +35,16 @@ type Cart = {
 type CartModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  isMobileInline?: boolean;
 };
 
 type ViewState = "cart" | "checkout";
 
-export default function CartModal({ isOpen, onClose }: CartModalProps) {
+export default function CartModal({
+  isOpen,
+  onClose,
+  isMobileInline = false,
+}: CartModalProps) {
   const [currentView, setCurrentView] = useState<ViewState>("cart");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [user, setUser] = useState<any>(null);
@@ -491,7 +496,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isOpen && !isMobileInline && (
         <>
           {/* White overlay for clicking outside to close */}
           <motion.div
@@ -551,6 +556,49 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
             {renderContent()}
           </motion.div>
         </>
+      )}
+      {isMobileInline && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="flex flex-col h-full"
+        >
+          {/* Dynamic Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center gap-3">
+              {currentView === "checkout" && (
+                <button
+                  onClick={() => setCurrentView("cart")}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors duration-200"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+              )}
+              <AnimatePresence mode="wait">
+                <motion.h2
+                  key={currentView}
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-xl font-playfair text-gray-900"
+                >
+                  {currentView === "cart" ? "Shopping Cart" : "Checkout"}
+                </motion.h2>
+              </AnimatePresence>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors duration-200"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Dynamic Content */}
+          {renderContent()}
+        </motion.div>
       )}
     </AnimatePresence>
   );
