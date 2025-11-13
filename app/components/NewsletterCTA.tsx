@@ -1,105 +1,143 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const NewsletterCTA = () => {
   const [email, setEmail] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [status, setStatus] = useState<
+    "idle" | "sending" | "sent" | "already-subscribed"
+  >("idle");
+  const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
+  const [user, setUser] = useState<{ id?: string; email?: string } | null>(
+    null
+  );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // check auth/me to prefill email if logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user || null);
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        setUser(null);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  // check subscription when user is present
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (user?.id || user?.email) {
+        setIsCheckingSubscription(true);
+        try {
+          const query = user.id
+            ? `userId=${user.id}`
+            : `email=${encodeURIComponent(user.email!)}`;
+          const res = await fetch(`/api/newsletter?${query}`);
+          const data = await res.json();
+          if (data.isSubscribed) {
+            setStatus("already-subscribed");
+          } else if (user.email) {
+            setEmail(user.email);
+          }
+        } catch (err) {
+          if (user.email) setEmail(user.email);
+        } finally {
+          setIsCheckingSubscription(false);
+        }
+      }
+    };
+
+    checkSubscription();
+  }, [user]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle newsletter signup logic here
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
-    setEmail("");
+    if (!email || status === "sending") return;
+
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, userId: user?.id || null }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setStatus("sent");
+        setTimeout(() => {
+          setStatus("already-subscribed");
+          if (!user) setEmail("");
+        }, 1500);
+      } else {
+        console.error("Subscription failed:", data.error || data.message);
+        setStatus("idle");
+      }
+    } catch (err) {
+      console.error("Error subscribing:", err);
+      setStatus("idle");
+    }
+  };
+
+  // animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, staggerChildren: 0.15 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
   return (
     <section className="py-24 px-6 bg-gradient-to-b from-white via-[#f8f6f3] to-[#f5f2ed]">
       <div className="max-w-4xl mx-auto text-center">
-        {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           className="mb-12"
         >
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
+            variants={itemVariants}
             className="text-4xl lg:text-5xl font-light text-gray-900 mb-6 font-playfair leading-tight"
           >
-            Join the LyLa Circle
+            {status === "already-subscribed"
+              ? "You're already subscribed!"
+              : "Join the LyLa Circle"}
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            viewport={{ once: true }}
+            variants={itemVariants}
             className="text-lg lg:text-xl text-gray-700 leading-relaxed max-w-2xl mx-auto font-poppins"
           >
-            Exclusive access to new arrivals, limited collections, and special
-            member pricing. Be the first to shop our latest luxury pieces.
+            {status === "already-subscribed"
+              ? "Thanks for being part of LyLa! You'll be the first to know about new arrivals and exclusive deals."
+              : "Exclusive access to new arrivals, limited collections, and special member pricing. Be the first to shop our latest luxury pieces."}
           </motion.p>
         </motion.div>
 
-        {/* Newsletter Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          viewport={{ once: true }}
-          className="relative"
-        >
-          {!isSubmitted ? (
-            <form
-              onSubmit={handleSubmit}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto"
-            >
-              <motion.div
-                className="relative flex-1 w-full"
-                whileFocus={{ scale: 1.02 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-              >
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email address"
-                  required
-                  className="w-full px-6 py-4 text-gray-900 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all duration-300 font-poppins placeholder-gray-500"
-                />
-              </motion.div>
-
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 text-sm font-medium text-white bg-gray-900 rounded-full hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl font-poppins whitespace-nowrap"
-              >
-                Join Circle
-              </motion.button>
-            </form>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-2xl p-8 max-w-md mx-auto"
-            >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-                className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
-              >
+        {status === "already-subscribed" ? (
+          <div className="max-w-md mx-auto">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+              <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-4">
                 <svg
-                  className="w-8 h-8 text-green-600"
+                  className="w-8 h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -111,107 +149,66 @@ const NewsletterCTA = () => {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-              </motion.div>
-              <h3 className="text-xl font-light text-gray-900 mb-2 font-playfair">
-                Welcome to the Circle
-              </h3>
-              <p className="text-gray-600 font-poppins">
-                You'll be the first to know about our newest collections and
-                exclusive offers.
-              </p>
-            </motion.div>
-          )}
-        </motion.div>
-
-        {/* Additional Benefits */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          viewport={{ once: true }}
-          className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto"
-        >
-          {[
-            {
-              icon: (
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              ),
-              title: "First Access",
-              description: "Shop new arrivals before anyone else",
-            },
-            {
-              icon: (
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"
-                  />
-                </svg>
-              ),
-              title: "Style Guide",
-              description: "Seasonal decor trends & inspiration",
-            },
-            {
-              icon: (
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"
-                  />
-                </svg>
-              ),
-              title: "VIP Pricing",
-              description: "Exclusive discounts & member sales",
-            },
-          ].map((benefit, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
-              viewport={{ once: true }}
-              className="text-center"
-            >
-              <div className="flex justify-center mb-4 text-gray-700">
-                {benefit.icon}
               </div>
-              <h4 className="text-lg font-medium text-gray-900 mb-2 font-playfair">
-                {benefit.title}
-              </h4>
-              <p className="text-sm text-gray-600 font-poppins leading-relaxed">
-                {benefit.description}
+              <p className="text-gray-700 font-medium truncate md:whitespace-normal md:overflow-visible">
+                {user
+                  ? `Subscribed with ${user.email}`
+                  : "Successfully subscribed!"}
               </p>
-            </motion.div>
-          ))}
-        </motion.div>
+            </div>
+          </div>
+        ) : (
+          <motion.div variants={itemVariants}>
+            <form
+              className="max-w-md mx-auto flex flex-col sm:flex-row gap-3"
+              onSubmit={handleSubmit}
+            >
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={
+                  user ? "Your email is pre-filled" : "Enter your email address"
+                }
+                className="block md:flex-1 px-4 py-3 rounded-lg text-[#1A1D23] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white border-2 border-white"
+                disabled={status === "sending" || isCheckingSubscription}
+              />
+              <button
+                type="submit"
+                className="px-6 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-300 disabled:opacity-50"
+                disabled={
+                  status === "sending" || isCheckingSubscription || !email
+                }
+              >
+                {isCheckingSubscription
+                  ? "Checking..."
+                  : status === "sending"
+                  ? "Subscribing..."
+                  : status === "sent"
+                  ? "Subscribed!"
+                  : "Subscribe"}
+              </button>
+            </form>
+          </motion.div>
+        )}
 
-        {/* Privacy Note */}
+        {status === "sent" && (
+          <motion.div variants={itemVariants} className="mt-4">
+            <p className="mt-4 text-gray-700">
+              Welcome to the LyLa Circle! Check your email for updates.
+            </p>
+          </motion.div>
+        )}
+
+        {user && status !== "already-subscribed" && (
+          <motion.div variants={itemVariants} className="mt-4">
+            <p className="mt-4 text-gray-700 text-sm">
+              You're logged in as {user.email}
+            </p>
+          </motion.div>
+        )}
+
         <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

@@ -33,11 +33,14 @@ export async function GET() {
       return {
         id: product.id,
         name: product.name,
-        price: `₵${product.price.toFixed(2)}`,
-        originalPrice:
+        price:
           product.salePercent > 0
-            ? `₵${(product.price / (1 - product.salePercent / 100)).toFixed(2)}`
+            ? `₵${(
+                product.price -
+                (product.price * product.salePercent) / 100
+              ).toFixed(2)}`
             : undefined,
+        originalPrice: `₵${product.price.toFixed(2)}`,
         image:
           product.images.length > 0
             ? product.images[0].url

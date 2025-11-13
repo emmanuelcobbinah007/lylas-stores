@@ -61,16 +61,16 @@ export default function ProductCard({
             </div>
           )}
 
-          {/* Price overlay - shows on hover */}
+          {/* Price overlay - shows on hover for larger screens */}
           <motion.div
             initial={{ opacity: 0 }}
             whileHover={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center"
+            className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center hidden sm:flex"
           >
             <div className="bg-white/95 backdrop-blur-sm px-6 py-3 rounded-full">
               <span className="text-lg font-medium text-gray-900 font-poppins">
-                {product.price}
+                {product.price ? product.price : product.originalPrice}
               </span>
             </div>
           </motion.div>
@@ -93,25 +93,34 @@ export default function ProductCard({
             {product.name}
           </h3>
           {product.description && (
-            <p className="text-sm text-gray-600 leading-relaxed font-poppins">
-              {product.description}
+            <p
+              className="text-sm text-gray-600 leading-relaxed font-poppins"
+              title={product.description}
+            >
+              {product.description
+                ? product.description.length > 40
+                  ? product.description.slice(0, 40).trimEnd() + "…"
+                  : product.description
+                : null}
             </p>
           )}
-          {/* Price Display
-          <div className="flex items-center justify-center gap-2">
-            {product.isOnSale && product.originalPrice && (
-              <span className="text-sm text-gray-400 line-through font-poppins">
+          {/* Price Display - always visible on mobile, hidden on larger screens */}
+          <div className="flex items-center justify-center gap-2 sm:hidden">
+            {product.price ? (
+              <>
+                <span className="text-sm text-gray-400 line-through font-poppins">
+                  {product.originalPrice}
+                </span>
+                <span className="text-lg font-medium font-poppins text-red-600">
+                  {product.price}
+                </span>
+              </>
+            ) : (
+              <span className="text-lg font-medium font-poppins text-gray-900">
                 {product.originalPrice}
               </span>
             )}
-            <span
-              className={`text-lg font-medium font-poppins ${
-                product.isOnSale ? "text-red-600" : "text-gray-900"
-              }`}
-            >
-              {product.price}
-            </span>
-          </div> */}
+          </div>
         </motion.div>
       </motion.div>
     </Link>
