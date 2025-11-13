@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
+import { toast } from "react-toastify";
 import {
   Star,
   Share2,
@@ -15,13 +17,12 @@ type ProductDetailsProps = {
   product: {
     id: string;
     name: string;
-    price: string;
-    originalPrice?: string;
+    price?: string;
+    originalPrice: string;
     rating: number;
-    reviewCount: number;
+    reviews: number;
     description: string;
     features: string[];
-    specifications: { [key: string]: string };
     inStock: boolean;
     category: string;
     images: string[];
@@ -30,6 +31,7 @@ type ProductDetailsProps = {
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity >= 1) {
@@ -37,9 +39,37 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     }
   };
 
-  const handleAddToCart = () => {
-    // Add to cart logic here
-    console.log(`Added ${quantity} of ${product.name} to cart`);
+  const handleAddToCart = async () => {
+    if (!product.inStock) return;
+
+    setIsAddingToCart(true);
+    try {
+      // Check if user is authenticated
+      const authResponse = await axios.get("/api/auth/me");
+      if (!authResponse.data.user) {
+        toast.error("Please log in to add items to your cart");
+        return;
+      }
+
+      // Add to cart
+      const response = await axios.post("/api/cart", {
+        productId: product.id,
+        quantity,
+      });
+
+      if (response.data.cart) {
+        toast.success(`${quantity} ${product.name} added to cart!`);
+      }
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.error("Please log in to add items to your cart");
+      } else {
+        toast.error("Failed to add item to cart. Please try again.");
+      }
+      console.error("Error adding to cart:", error);
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const handleBuyNow = () => {
@@ -113,26 +143,26 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             ))}
           </div>
           <span className="text-sm text-gray-600 font-poppins">
-            {product.rating} ({product.reviewCount} reviews)
+            {product.rating} ({product.reviews} reviews)
           </span>
         </div>
 
         {/* Price */}
         <div className="flex items-baseline gap-3 mb-6">
           {product.price ? (
-            <span className="text-2xl md:text-3xl font-playfair text-gray-900">
-              {product.price}
-            </span>
+            <>
+              <span className="text-2xl md:text-3xl font-playfair text-gray-900">
+                {product.price}
+              </span>
+              <span className="text-lg text-gray-500 line-through font-poppins">
+                {product.originalPrice}
+              </span>
+            </>
           ) : (
             <span className="text-2xl md:text-3xl font-playfair text-gray-900">
               {product.originalPrice}
             </span>
           )}
-          {product.price ? (
-            <span className="text-lg text-gray-500 line-through font-poppins">
-              {product.originalPrice}
-            </span>
-          ) : null}
         </div>
 
         {/* Stock Status */}
@@ -183,12 +213,16 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         <div className="flex flex-col sm:flex-row gap-4">
           <motion.button
             onClick={handleAddToCart}
-            disabled={!product.inStock}
+            disabled={!product.inStock || isAddingToCart}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="flex-1 bg-gray-900 text-white py-4 px-6 rounded-lg font-medium transition-all duration-200 hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed font-poppins"
           >
-            {product.inStock ? "Add to Cart" : "Out of Stock"}
+            {isAddingToCart
+              ? "Adding..."
+              : product.inStock
+              ? "Add to Cart"
+              : "Out of Stock"}
           </motion.button>
 
           <div className="flex gap-2">
@@ -247,33 +281,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           {product.description}
         </p>
       </motion.div>
-
-      {/* Specifications */}
-      {product.specifications &&
-        product.specifications !== null &&
-        Object.keys(product.specifications).length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="space-y-4"
-          >
-            <h3 className="text-lg font-playfair text-gray-900">
-              Specifications
-            </h3>
-            <div className="space-y-3">
-              {Object.entries(product.specifications).map(([key, value]) => (
-                <div
-                  key={key}
-                  className="flex justify-between py-2 border-b border-gray-100"
-                >
-                  <span className="text-gray-600 font-poppins">{key}</span>
-                  <span className="text-gray-900 font-poppins">{value}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
 
       {/* Shipping & Returns */}
       <motion.div

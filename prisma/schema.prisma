@@ -175,7 +175,8 @@ model Cart {
 model CartItem {
   id          String    @id @default(uuid()) @db.Uuid
   quantity    Int       @default(1)
-  size        String?   
+  size        String?
+  priceAtTimeOfAddition Float? @default(0.00)
   cartId      String    @db.Uuid
   cart        Cart      @relation(fields: [cartId], references: [id])
   productId   String    @db.Uuid

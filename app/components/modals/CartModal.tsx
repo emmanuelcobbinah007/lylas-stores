@@ -18,10 +18,12 @@ type CartItem = {
   id: string;
   quantity: number;
   size: string | null;
+  priceAtTimeOfAddition: number;
   product: {
     id: string;
     name: string;
     price: number;
+    salePercent: number;
     images: { url: string }[];
     category: { name: string };
   };
@@ -67,7 +69,7 @@ export default function CartModal({
         setIsLoggedIn(true);
 
         // Fetch cart
-        const cartRes = await fetch(`/api/cart?userId=${user.id}`);
+        const cartRes = await fetch("/api/cart");
         if (cartRes.ok) {
           const { cart: cartData } = await cartRes.json();
           setCart(cartData);
@@ -104,9 +106,29 @@ export default function CartModal({
           : null
       );
 
-      // TODO: Call API to update in DB
+      // Call API to update in DB
+      const response = await fetch("/api/cart", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cartItemId: id,
+          quantity: newQuantity,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update quantity");
+      }
+
+      const { cart: updatedCart } = await response.json();
+      setCart(updatedCart);
     } catch (error) {
       console.error("Error updating quantity:", error);
+      toast.error("Failed to update quantity");
+      // Revert local state on error
+      await fetchUserAndCart();
     }
   };
 
@@ -123,15 +145,28 @@ export default function CartModal({
           : null
       );
 
-      // TODO: Call API to remove from DB
+      // Call API to remove from DB
+      const response = await fetch(`/api/cart?cartItemId=${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to remove item");
+      }
+
+      const { cart: updatedCart } = await response.json();
+      setCart(updatedCart);
     } catch (error) {
       console.error("Error removing item:", error);
+      toast.error("Failed to remove item");
+      // Revert local state on error
+      await fetchUserAndCart();
     }
   };
 
   const getTotalPrice = () => {
     return (cart?.cartItems || []).reduce(
-      (total, item) => total + item.product.price * item.quantity,
+      (total, item) => total + getItemPrice(item) * item.quantity,
       0
     );
   };
@@ -141,6 +176,20 @@ export default function CartModal({
       (total, item) => total + item.quantity,
       0
     );
+  };
+
+  const getItemPrice = (item: CartItem) => {
+    // Use stored price if available, otherwise calculate from product
+    if (
+      item.priceAtTimeOfAddition !== undefined &&
+      item.priceAtTimeOfAddition !== null
+    ) {
+      return item.priceAtTimeOfAddition;
+    }
+    // Fallback: calculate price accounting for sale
+    return item.product.salePercent > 0
+      ? item.product.price * (1 - item.product.salePercent / 100)
+      : item.product.price;
   };
 
   const handleClose = () => {
@@ -168,7 +217,7 @@ export default function CartModal({
                       {item.product.name} × {item.quantity}
                     </span>
                     <span className="text-gray-900 font-poppins">
-                      ₵{(item.product.price * item.quantity).toFixed(2)}
+                      ₵{(getItemPrice(item) * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -401,7 +450,7 @@ export default function CartModal({
                     {item.product.category.name}
                   </p>
                   <p className="text-lg font-poppins font-semibold text-gray-900 mt-1">
-                    ₵{item.product.price.toFixed(2)}
+                    ₵{getItemPrice(item).toFixed(2)}
                   </p>
                 </div>
 
