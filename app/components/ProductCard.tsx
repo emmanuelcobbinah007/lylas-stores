@@ -13,6 +13,8 @@ type Product = {
   image: string;
   category?: string;
   description?: string;
+  isOnSale?: boolean;
+  originalPrice?: string;
 };
 
 export default function ProductCard({
@@ -52,6 +54,13 @@ export default function ProductCard({
             className="object-cover rounded-lg transform group-hover:scale-105 transition-transform duration-700 ease-out"
           />
 
+          {/* Sale Badge */}
+          {product.isOnSale && (
+            <div className="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold font-poppins z-10">
+              SALE
+            </div>
+          )}
+
           {/* Price overlay - shows on hover */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -88,6 +97,21 @@ export default function ProductCard({
               {product.description}
             </p>
           )}
+          {/* Price Display
+          <div className="flex items-center justify-center gap-2">
+            {product.isOnSale && product.originalPrice && (
+              <span className="text-sm text-gray-400 line-through font-poppins">
+                {product.originalPrice}
+              </span>
+            )}
+            <span
+              className={`text-lg font-medium font-poppins ${
+                product.isOnSale ? "text-red-600" : "text-gray-900"
+              }`}
+            >
+              {product.price}
+            </span>
+          </div> */}
         </motion.div>
       </motion.div>
     </Link>
