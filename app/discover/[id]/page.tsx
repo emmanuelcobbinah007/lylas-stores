@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props) {
   try {
     const response = await axios.get(
       `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
       }/api/products/${id}`
     );
     const product = response.data.product;
@@ -45,7 +45,7 @@ export default async function ProductPage({ params }: Props) {
   try {
     const response = await axios.get(
       `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
       }/api/products/${id}`
     );
     const product = response.data.product;
@@ -57,7 +57,7 @@ export default async function ProductPage({ params }: Props) {
     // Get related products (same category, limit 3)
     const relatedResponse = await axios.get(
       `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
       }/api/products?limit=4`
     );
     const allProducts = relatedResponse.data.products;
