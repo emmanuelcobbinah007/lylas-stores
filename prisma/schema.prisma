@@ -205,6 +205,7 @@ model OrderItem {
   order       Order     @relation(fields: [orderId], references: [id])
   productId   String    @db.Uuid
   product     Product   @relation(fields: [productId], references: [id])
+  priceAtTimeOfOrder Float? @default(0.00)
   createdAt   DateTime  @default(now())
   updatedAt DateTime @updatedAt
 }

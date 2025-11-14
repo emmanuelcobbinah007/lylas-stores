@@ -40,7 +40,11 @@ export async function GET(request: NextRequest) {
       where: { userId: user.id, storefront: "LYLA" },
       include: {
         cartItems: {
-          include: {
+          select: {
+            id: true,
+            quantity: true,
+            size: true,
+            priceAtTimeOfAddition: true,
             product: {
               select: {
                 id: true,
@@ -61,7 +65,11 @@ export async function GET(request: NextRequest) {
         data: { userId: user.id, storefront: "LYLA" },
         include: {
           cartItems: {
-            include: {
+            select: {
+              id: true,
+              quantity: true,
+              size: true,
+              priceAtTimeOfAddition: true,
               product: {
                 select: {
                   id: true,
@@ -160,7 +168,11 @@ export async function POST(request: NextRequest) {
       where: { id: cart.id },
       include: {
         cartItems: {
-          include: {
+          select: {
+            id: true,
+            quantity: true,
+            size: true,
+            priceAtTimeOfAddition: true,
             product: {
               select: {
                 id: true,
@@ -240,7 +252,11 @@ export async function PUT(request: NextRequest) {
       where: { userId: user.id, storefront: "LYLA" },
       include: {
         cartItems: {
-          include: {
+          select: {
+            id: true,
+            quantity: true,
+            size: true,
+            priceAtTimeOfAddition: true,
             product: {
               select: {
                 id: true,
@@ -312,7 +328,11 @@ export async function DELETE(request: NextRequest) {
       where: { userId: user.id, storefront: "LYLA" },
       include: {
         cartItems: {
-          include: {
+          select: {
+            id: true,
+            quantity: true,
+            size: true,
+            priceAtTimeOfAddition: true,
             product: {
               select: {
                 id: true,

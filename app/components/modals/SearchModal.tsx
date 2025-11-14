@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import useLockBodyScroll from "../../hooks/useLockBodyScroll";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X } from "lucide-react";
 import axios from "axios";
@@ -30,6 +31,8 @@ export default function SearchModal({
   onClose,
   isMobileInline = false,
 }: SearchModalProps) {
+  // Prevent background scrolling while search modal is open
+  useLockBodyScroll(isOpen);
   const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -274,11 +277,11 @@ export default function SearchModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="flex flex-col h-full p-6"
+          className="flex flex-col max-h-[calc(100vh-200px)] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Search Bar */}
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-4 p-6 pb-4 flex-shrink-0">
             <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
             <input
               type="text"
@@ -297,132 +300,136 @@ export default function SearchModal({
           </div>
 
           {/* Search Results */}
-          {searchQuery && (
-            <div className="flex-1 overflow-y-auto">
-              {loading ? (
-                <div className="text-center py-8">
-                  <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
-                  <p className="text-gray-500 font-poppins text-sm">
-                    Loading...
-                  </p>
-                </div>
-              ) : (
-                <>
-                  {/* Categories */}
-                  {filteredCategories.length > 0 && (
-                    <div className="mb-6">
-                      <h4 className="text-sm font-medium text-gray-900 font-poppins mb-3">
-                        Categories
-                      </h4>
-                      <div className="space-y-2">
-                        {filteredCategories.map((category) => (
-                          <button
-                            key={category.id}
-                            onClick={() => handleCategoryClick(category.name)}
-                            className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                                <Search className="w-4 h-4 text-gray-600" />
+          <div className="flex-1 overflow-y-auto px-6">
+            {searchQuery && (
+              <>
+                {loading ? (
+                  <div className="text-center py-8">
+                    <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-gray-500 font-poppins text-sm">
+                      Loading...
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Categories */}
+                    {filteredCategories.length > 0 && (
+                      <div className="mb-6">
+                        <h4 className="text-sm font-medium text-gray-900 font-poppins mb-3">
+                          Categories
+                        </h4>
+                        <div className="space-y-2">
+                          {filteredCategories.map((category) => (
+                            <button
+                              key={category.id}
+                              onClick={() => handleCategoryClick(category.name)}
+                              className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                                  <Search className="w-4 h-4 text-gray-600" />
+                                </div>
+                                <div>
+                                  <p className="font-poppins font-medium text-gray-900">
+                                    {category.name}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    Category
+                                  </p>
+                                </div>
                               </div>
-                              <div>
-                                <p className="font-poppins font-medium text-gray-900">
-                                  {category.name}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  Category
-                                </p>
-                              </div>
-                            </div>
-                          </button>
-                        ))}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Products */}
-                  {filteredProducts.length > 0 && (
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-900 font-poppins mb-3">
-                        Products
-                      </h4>
-                      <div className="grid grid-cols-2 gap-3">
-                        {filteredProducts.slice(0, 8).map((product) => (
-                          <div
-                            key={product.id}
-                            onClick={() => handleProductClick(product.id)}
-                            className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                          >
-                            <div className="aspect-square bg-gray-200 relative overflow-hidden">
-                              {product.image ? (
-                                <>
-                                  <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                    onError={(e) => {
-                                      e.currentTarget.style.display = "none";
-                                      const placeholder = e.currentTarget
-                                        .nextElementSibling as HTMLElement;
-                                      if (placeholder)
-                                        placeholder.classList.remove("hidden");
-                                    }}
-                                  />
-                                  <div className="hidden w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                    {/* Products */}
+                    {filteredProducts.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-900 font-poppins mb-3">
+                          Products
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          {filteredProducts.slice(0, 8).map((product) => (
+                            <div
+                              key={product.id}
+                              onClick={() => handleProductClick(product.id)}
+                              className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                            >
+                              <div className="aspect-square bg-gray-200 relative overflow-hidden">
+                                {product.image ? (
+                                  <>
+                                    <img
+                                      src={product.image}
+                                      alt={product.name}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                      onError={(e) => {
+                                        e.currentTarget.style.display = "none";
+                                        const placeholder = e.currentTarget
+                                          .nextElementSibling as HTMLElement;
+                                        if (placeholder)
+                                          placeholder.classList.remove(
+                                            "hidden"
+                                          );
+                                      }}
+                                    />
+                                    <div className="hidden w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                      <span className="text-xs text-gray-400 font-poppins">
+                                        IMG
+                                      </span>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                                     <span className="text-xs text-gray-400 font-poppins">
                                       IMG
                                     </span>
                                   </div>
-                                </>
-                              ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                                  <span className="text-xs text-gray-400 font-poppins">
-                                    IMG
-                                  </span>
-                                </div>
-                              )}
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              </div>
+                              <div className="p-3">
+                                <h3 className="font-poppins font-medium text-gray-900 text-sm line-clamp-2 mb-1">
+                                  {product.name}
+                                </h3>
+                                <p className="text-xs text-gray-500 font-medium mb-1">
+                                  {product.category
+                                    ? product.category
+                                        .split("-")
+                                        .map(
+                                          (word) =>
+                                            word.charAt(0).toUpperCase() +
+                                            word.slice(1)
+                                        )
+                                        .join(" ")
+                                    : "Uncategorized"}
+                                </p>
+                                <p className="text-xs text-gray-500 font-medium">
+                                  {product.price}
+                                </p>
+                              </div>
                             </div>
-                            <div className="p-3">
-                              <h3 className="font-poppins font-medium text-gray-900 text-sm line-clamp-2 mb-1">
-                                {product.name}
-                              </h3>
-                              <p className="text-xs text-gray-500 font-medium mb-1">
-                                {product.category
-                                  ? product.category
-                                      .split("-")
-                                      .map(
-                                        (word) =>
-                                          word.charAt(0).toUpperCase() +
-                                          word.slice(1)
-                                      )
-                                      .join(" ")
-                                  : "Uncategorized"}
-                              </p>
-                              <p className="text-xs text-gray-500 font-medium">
-                                {product.price}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* No results */}
-                  {searchQuery.length > 2 &&
-                    filteredProducts.length === 0 &&
-                    filteredCategories.length === 0 && (
-                      <div className="text-center py-8">
-                        <p className="text-gray-500 font-poppins text-sm">
-                          No results found for "{searchQuery}"
-                        </p>
+                          ))}
+                        </div>
                       </div>
                     )}
-                </>
-              )}
-            </div>
-          )}
+
+                    {/* No results */}
+                    {searchQuery.length > 2 &&
+                      filteredProducts.length === 0 &&
+                      filteredCategories.length === 0 && (
+                        <div className="text-center py-8">
+                          <p className="text-gray-500 font-poppins text-sm">
+                            No results found for "{searchQuery}"
+                          </p>
+                        </div>
+                      )}
+                  </>
+                )}
+              </>
+            )}
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

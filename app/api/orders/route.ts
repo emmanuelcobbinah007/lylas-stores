@@ -8,6 +8,7 @@ interface OrderItemWithProduct {
   id: string;
   quantity: number;
   size: string | null;
+  priceAtTimeOfOrder: number | null;
   product: {
     id: string;
     name: string;
@@ -57,6 +58,30 @@ export async function POST(request: NextRequest) {
     // Start a transaction to ensure data consistency
     const order = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
+        // Get cart items to preserve prices at time of order
+        const cartItems = await tx.cartItem.findMany({
+          where: {
+            cart: {
+              userId,
+              storefront,
+            },
+            productId: {
+              in: items.map((item) => item.productId),
+            },
+          },
+          include: {
+            product: true,
+          },
+        });
+
+        // Create a map of productId to priceAtTimeOfAddition
+        const priceMap = new Map(
+          cartItems.map((item) => [
+            item.productId,
+            item.priceAtTimeOfAddition || item.product.price,
+          ])
+        );
+
         // Create the order
         const newOrder = await tx.order.create({
           data: {
@@ -66,18 +91,21 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        // Create order items
+        // Create order items with preserved prices
         await Promise.all(
           items.map(
-            (item: { productId: string; quantity: number; size?: string }) =>
-              tx.orderItem.create({
+            (item: { productId: string; quantity: number; size?: string }) => {
+              const priceAtTimeOfOrder = priceMap.get(item.productId) || 0;
+              return tx.orderItem.create({
                 data: {
                   orderId: newOrder.id,
                   productId: item.productId,
                   quantity: item.quantity,
                   size: item.size || null,
+                  priceAtTimeOfOrder,
                 },
-              })
+              });
+            }
           )
         );
 
@@ -180,7 +208,8 @@ export async function GET(request: NextRequest) {
         ...order,
         total: order.orderItems.reduce(
           (sum: number, item: OrderItemWithProduct) =>
-            sum + item.product.price * item.quantity,
+            sum +
+            (item.priceAtTimeOfOrder || item.product.price) * item.quantity,
           0
         ),
         itemCount: order.orderItems.reduce(

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import useLockBodyScroll from "../../hooks/useLockBodyScroll";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import {
@@ -47,6 +48,8 @@ export default function CartModal({
   onClose,
   isMobileInline = false,
 }: CartModalProps) {
+  // Lock body scroll while modal is open to prevent background scrolling / overscroll on mobile
+  useLockBodyScroll(isOpen);
   const [currentView, setCurrentView] = useState<ViewState>("cart");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [user, setUser] = useState<any>(null);
@@ -535,7 +538,7 @@ export default function CartModal({
             ease: "easeInOut",
             type: "tween",
           }}
-          className="flex flex-col h-full"
+          className="flex flex-col"
         >
           {currentView === "cart" ? renderCartView() : renderCheckoutView()}
         </motion.div>
@@ -611,11 +614,11 @@ export default function CartModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="flex flex-col h-full"
+          className="flex flex-col max-h-[calc(100vh-200px)] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Dynamic Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
             <div className="flex items-center gap-3">
               {currentView === "checkout" && (
                 <button
@@ -647,7 +650,7 @@ export default function CartModal({
           </div>
 
           {/* Dynamic Content */}
-          {renderContent()}
+          <div className="flex-1 overflow-y-auto">{renderContent()}</div>
         </motion.div>
       )}
     </AnimatePresence>

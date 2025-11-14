@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import useLockBodyScroll from "../../hooks/useLockBodyScroll";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowLeft } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
@@ -26,6 +27,8 @@ export default function UserModal({
   onClose,
   isMobileInline = false,
 }: UserModalProps) {
+  // Lock body scroll while user modal is open
+  useLockBodyScroll(isOpen);
   const [currentView, setCurrentView] = useState<ViewState>("signin");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{
@@ -287,14 +290,14 @@ export default function UserModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="flex flex-col h-full"
+          className="flex flex-col max-h-[calc(100vh-200px)] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          {renderHeader()}
+          <div className="flex-shrink-0">{renderHeader()}</div>
 
           {/* Content */}
-          <div className="flex-1 p-6 overflow-y-auto">{renderContent()}</div>
+          <div className="flex-1 overflow-y-auto p-6">{renderContent()}</div>
         </motion.div>
       )}
     </AnimatePresence>
