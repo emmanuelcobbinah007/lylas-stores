@@ -4,6 +4,16 @@ body {
   font-family: var(--font-poppins), system-ui, sans-serif;
 }
 
+/* Hide scrollbars globally */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
 /* Font family utilities */
 .font-playfair {
   font-family: var(--font-playfair), serif;
