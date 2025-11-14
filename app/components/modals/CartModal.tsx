@@ -14,6 +14,7 @@ import {
   Truck,
   Shield,
 } from "lucide-react";
+import PaystackCheckout from "../PaystackCheckout";
 
 type CartItem = {
   id: string;
@@ -55,6 +56,17 @@ export default function CartModal({
   const [user, setUser] = useState<any>(null);
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Checkout state
+  const [shippingInfo, setShippingInfo] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    streetAddress: "",
+    city: "",
+    postalCode: "",
+  });
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -200,6 +212,81 @@ export default function CartModal({
     onClose();
   };
 
+  const handlePaymentSuccess = async (reference: string) => {
+    if (!cart || !user) return;
+
+    setIsProcessingPayment(true);
+    try {
+      // Verify payment with Paystack
+      const verifyRes = await fetch("/api/payments/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reference }),
+      });
+
+      if (!verifyRes.ok) {
+        throw new Error("Payment verification failed");
+      }
+
+      const { verified, amount } = await verifyRes.json();
+
+      if (!verified) {
+        throw new Error("Payment not verified");
+      }
+
+      // Create order
+      const orderRes = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          shippingInfo,
+          paymentReference: reference,
+          totalAmount: amount / 100, // Convert from kobo to GHS
+        }),
+      });
+
+      if (!orderRes.ok) {
+        throw new Error("Failed to create order");
+      }
+
+      const { order } = await orderRes.json();
+
+      // Clear cart
+      setCart(null);
+
+      // Reset form
+      setShippingInfo({
+        firstName: "",
+        lastName: "",
+        email: "",
+        streetAddress: "",
+        city: "",
+        postalCode: "",
+      });
+
+      // Close modal and show success
+      setCurrentView("cart");
+      handleClose();
+
+      toast.success(
+        `Order #${order.id} placed successfully! Check your email for confirmation.`
+      );
+    } catch (error) {
+      console.error("Payment processing error:", error);
+      toast.error("Payment processing failed. Please contact support.");
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  const handlePaymentClose = () => {
+    setIsProcessingPayment(false);
+  };
+
   const renderCheckoutView = () => {
     const items = cart?.cartItems || [];
 
@@ -243,34 +330,76 @@ export default function CartModal({
                   <input
                     type="text"
                     placeholder="First name"
+                    value={shippingInfo.firstName}
+                    onChange={(e) =>
+                      setShippingInfo({
+                        ...shippingInfo,
+                        firstName: e.target.value,
+                      })
+                    }
                     className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins text-sm"
+                    required
                   />
                   <input
                     type="text"
                     placeholder="Last name"
+                    value={shippingInfo.lastName}
+                    onChange={(e) =>
+                      setShippingInfo({
+                        ...shippingInfo,
+                        lastName: e.target.value,
+                      })
+                    }
                     className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins text-sm"
+                    required
                   />
                 </div>
                 <input
                   type="email"
                   placeholder="Email address"
+                  value={shippingInfo.email}
+                  onChange={(e) =>
+                    setShippingInfo({ ...shippingInfo, email: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins text-sm"
+                  required
                 />
                 <input
                   type="text"
                   placeholder="Street address"
+                  value={shippingInfo.streetAddress}
+                  onChange={(e) =>
+                    setShippingInfo({
+                      ...shippingInfo,
+                      streetAddress: e.target.value,
+                    })
+                  }
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins text-sm"
+                  required
                 />
                 <div className="grid grid-cols-2 gap-3">
                   <input
                     type="text"
                     placeholder="City"
+                    value={shippingInfo.city}
+                    onChange={(e) =>
+                      setShippingInfo({ ...shippingInfo, city: e.target.value })
+                    }
                     className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins text-sm"
+                    required
                   />
                   <input
                     type="text"
                     placeholder="Postal code"
+                    value={shippingInfo.postalCode}
+                    onChange={(e) =>
+                      setShippingInfo({
+                        ...shippingInfo,
+                        postalCode: e.target.value,
+                      })
+                    }
                     className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins text-sm"
+                    required
                   />
                 </div>
               </div>
@@ -282,31 +411,27 @@ export default function CartModal({
                 Payment Information
               </h3>
               <div className="space-y-3">
-                <div className="relative">
-                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="text"
-                    placeholder="Card number"
-                    className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins text-sm"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    placeholder="MM/YY"
-                    className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="CVC"
-                    className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins text-sm"
-                  />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Cardholder name"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins text-sm"
+                <PaystackCheckout
+                  amount={getTotalPrice()}
+                  email={shippingInfo.email || user?.email || ""}
+                  firstName={shippingInfo.firstName}
+                  lastName={shippingInfo.lastName}
+                  phone="" // Optional phone field
+                  onSuccess={handlePaymentSuccess}
+                  onClose={handlePaymentClose}
+                  disabled={
+                    !shippingInfo.firstName ||
+                    !shippingInfo.lastName ||
+                    !shippingInfo.email ||
+                    !shippingInfo.streetAddress ||
+                    !shippingInfo.city ||
+                    !shippingInfo.postalCode ||
+                    isProcessingPayment
+                  }
                 />
+                <p className="text-xs text-gray-500 font-poppins">
+                  You will be redirected to Paystack's secure payment page
+                </p>
               </div>
             </div>
 
@@ -342,21 +467,9 @@ export default function CartModal({
 
         {/* Checkout Actions */}
         <div className="p-6 border-t border-gray-200">
-          <button
-            onClick={() => {
-              // Simulate order placement
-              toast.success("Order placed successfully!");
-              setCart(null);
-              setCurrentView("cart");
-              handleClose();
-            }}
-            className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-poppins font-medium"
-          >
-            Place Order - ₵{getTotalPrice().toFixed(2)}
-          </button>
-          <p className="text-xs text-gray-500 text-center mt-2 font-poppins">
-            By placing your order, you agree to our Terms of Service and Privacy
-            Policy
+          <p className="text-xs text-gray-500 text-center font-poppins">
+            By completing your payment, you agree to our Terms of Service and
+            Privacy Policy
           </p>
         </div>
       </>
