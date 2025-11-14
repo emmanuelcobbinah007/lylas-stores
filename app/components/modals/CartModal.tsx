@@ -215,9 +215,11 @@ export default function CartModal({
   const handlePaymentSuccess = async (reference: string) => {
     if (!cart || !user) return;
 
+    console.log("Payment success callback called with reference:", reference);
     setIsProcessingPayment(true);
     try {
       // Verify payment with Paystack
+      console.log("Verifying payment with reference:", reference);
       const verifyRes = await fetch("/api/payments/verify", {
         method: "POST",
         headers: {
@@ -226,17 +228,26 @@ export default function CartModal({
         body: JSON.stringify({ reference }),
       });
 
+      console.log("Verification response status:", verifyRes.status);
+      const verifyData = await verifyRes.json();
+      console.log("Verification response data:", verifyData);
+
       if (!verifyRes.ok) {
         throw new Error("Payment verification failed");
       }
 
-      const { verified, amount } = await verifyRes.json();
+      const { success, data } = verifyData;
 
-      if (!verified) {
+      if (!success) {
         throw new Error("Payment not verified");
       }
 
       // Create order
+      console.log("Creating order with data:", {
+        shippingInfo,
+        paymentReference: reference,
+        totalAmount: data.amount / 100,
+      });
       const orderRes = await fetch("/api/orders", {
         method: "POST",
         headers: {
@@ -245,15 +256,19 @@ export default function CartModal({
         body: JSON.stringify({
           shippingInfo,
           paymentReference: reference,
-          totalAmount: amount / 100, // Convert from kobo to GHS
+          totalAmount: data.amount / 100, // Convert from kobo to GHS
         }),
       });
+
+      console.log("Order creation response status:", orderRes.status);
+      const orderData = await orderRes.json();
+      console.log("Order creation response data:", orderData);
 
       if (!orderRes.ok) {
         throw new Error("Failed to create order");
       }
 
-      const { order } = await orderRes.json();
+      const { order } = orderData;
 
       // Clear cart
       setCart(null);

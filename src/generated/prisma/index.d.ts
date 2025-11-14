@@ -13597,8 +13597,18 @@ export namespace Prisma {
 
   export type AggregateOrder = {
     _count: OrderCountAggregateOutputType | null
+    _avg: OrderAvgAggregateOutputType | null
+    _sum: OrderSumAggregateOutputType | null
     _min: OrderMinAggregateOutputType | null
     _max: OrderMaxAggregateOutputType | null
+  }
+
+  export type OrderAvgAggregateOutputType = {
+    totalAmount: number | null
+  }
+
+  export type OrderSumAggregateOutputType = {
+    totalAmount: number | null
   }
 
   export type OrderMinAggregateOutputType = {
@@ -13606,6 +13616,14 @@ export namespace Prisma {
     status: $Enums.OrderStatus | null
     storefront: $Enums.Storefront | null
     userId: string | null
+    shippingFirstName: string | null
+    shippingLastName: string | null
+    shippingEmail: string | null
+    shippingStreetAddress: string | null
+    shippingCity: string | null
+    shippingPostalCode: string | null
+    paymentReference: string | null
+    totalAmount: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -13615,6 +13633,14 @@ export namespace Prisma {
     status: $Enums.OrderStatus | null
     storefront: $Enums.Storefront | null
     userId: string | null
+    shippingFirstName: string | null
+    shippingLastName: string | null
+    shippingEmail: string | null
+    shippingStreetAddress: string | null
+    shippingCity: string | null
+    shippingPostalCode: string | null
+    paymentReference: string | null
+    totalAmount: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -13624,17 +13650,41 @@ export namespace Prisma {
     status: number
     storefront: number
     userId: number
+    shippingFirstName: number
+    shippingLastName: number
+    shippingEmail: number
+    shippingStreetAddress: number
+    shippingCity: number
+    shippingPostalCode: number
+    paymentReference: number
+    totalAmount: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
 
+  export type OrderAvgAggregateInputType = {
+    totalAmount?: true
+  }
+
+  export type OrderSumAggregateInputType = {
+    totalAmount?: true
+  }
+
   export type OrderMinAggregateInputType = {
     id?: true
     status?: true
     storefront?: true
     userId?: true
+    shippingFirstName?: true
+    shippingLastName?: true
+    shippingEmail?: true
+    shippingStreetAddress?: true
+    shippingCity?: true
+    shippingPostalCode?: true
+    paymentReference?: true
+    totalAmount?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -13644,6 +13694,14 @@ export namespace Prisma {
     status?: true
     storefront?: true
     userId?: true
+    shippingFirstName?: true
+    shippingLastName?: true
+    shippingEmail?: true
+    shippingStreetAddress?: true
+    shippingCity?: true
+    shippingPostalCode?: true
+    paymentReference?: true
+    totalAmount?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -13653,6 +13711,14 @@ export namespace Prisma {
     status?: true
     storefront?: true
     userId?: true
+    shippingFirstName?: true
+    shippingLastName?: true
+    shippingEmail?: true
+    shippingStreetAddress?: true
+    shippingCity?: true
+    shippingPostalCode?: true
+    paymentReference?: true
+    totalAmount?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -13696,6 +13762,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: OrderAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: OrderSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: OrderMinAggregateInputType
@@ -13726,6 +13804,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: OrderCountAggregateInputType | true
+    _avg?: OrderAvgAggregateInputType
+    _sum?: OrderSumAggregateInputType
     _min?: OrderMinAggregateInputType
     _max?: OrderMaxAggregateInputType
   }
@@ -13735,9 +13815,19 @@ export namespace Prisma {
     status: $Enums.OrderStatus
     storefront: $Enums.Storefront | null
     userId: string
+    shippingFirstName: string | null
+    shippingLastName: string | null
+    shippingEmail: string | null
+    shippingStreetAddress: string | null
+    shippingCity: string | null
+    shippingPostalCode: string | null
+    paymentReference: string | null
+    totalAmount: number | null
     createdAt: Date
     updatedAt: Date
     _count: OrderCountAggregateOutputType | null
+    _avg: OrderAvgAggregateOutputType | null
+    _sum: OrderSumAggregateOutputType | null
     _min: OrderMinAggregateOutputType | null
     _max: OrderMaxAggregateOutputType | null
   }
@@ -13761,6 +13851,14 @@ export namespace Prisma {
     status?: boolean
     storefront?: boolean
     userId?: boolean
+    shippingFirstName?: boolean
+    shippingLastName?: boolean
+    shippingEmail?: boolean
+    shippingStreetAddress?: boolean
+    shippingCity?: boolean
+    shippingPostalCode?: boolean
+    paymentReference?: boolean
+    totalAmount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     orderItems?: boolean | Order$orderItemsArgs<ExtArgs>
@@ -13774,6 +13872,14 @@ export namespace Prisma {
     status?: boolean
     storefront?: boolean
     userId?: boolean
+    shippingFirstName?: boolean
+    shippingLastName?: boolean
+    shippingEmail?: boolean
+    shippingStreetAddress?: boolean
+    shippingCity?: boolean
+    shippingPostalCode?: boolean
+    paymentReference?: boolean
+    totalAmount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -13784,6 +13890,14 @@ export namespace Prisma {
     status?: boolean
     storefront?: boolean
     userId?: boolean
+    shippingFirstName?: boolean
+    shippingLastName?: boolean
+    shippingEmail?: boolean
+    shippingStreetAddress?: boolean
+    shippingCity?: boolean
+    shippingPostalCode?: boolean
+    paymentReference?: boolean
+    totalAmount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -13794,11 +13908,19 @@ export namespace Prisma {
     status?: boolean
     storefront?: boolean
     userId?: boolean
+    shippingFirstName?: boolean
+    shippingLastName?: boolean
+    shippingEmail?: boolean
+    shippingStreetAddress?: boolean
+    shippingCity?: boolean
+    shippingPostalCode?: boolean
+    paymentReference?: boolean
+    totalAmount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "status" | "storefront" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "status" | "storefront" | "userId" | "shippingFirstName" | "shippingLastName" | "shippingEmail" | "shippingStreetAddress" | "shippingCity" | "shippingPostalCode" | "paymentReference" | "totalAmount" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orderItems?: boolean | Order$orderItemsArgs<ExtArgs>
     reviews?: boolean | Order$reviewsArgs<ExtArgs>
@@ -13824,6 +13946,14 @@ export namespace Prisma {
       status: $Enums.OrderStatus
       storefront: $Enums.Storefront | null
       userId: string
+      shippingFirstName: string | null
+      shippingLastName: string | null
+      shippingEmail: string | null
+      shippingStreetAddress: string | null
+      shippingCity: string | null
+      shippingPostalCode: string | null
+      paymentReference: string | null
+      totalAmount: number | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["order"]>
@@ -14256,6 +14386,14 @@ export namespace Prisma {
     readonly status: FieldRef<"Order", 'OrderStatus'>
     readonly storefront: FieldRef<"Order", 'Storefront'>
     readonly userId: FieldRef<"Order", 'String'>
+    readonly shippingFirstName: FieldRef<"Order", 'String'>
+    readonly shippingLastName: FieldRef<"Order", 'String'>
+    readonly shippingEmail: FieldRef<"Order", 'String'>
+    readonly shippingStreetAddress: FieldRef<"Order", 'String'>
+    readonly shippingCity: FieldRef<"Order", 'String'>
+    readonly shippingPostalCode: FieldRef<"Order", 'String'>
+    readonly paymentReference: FieldRef<"Order", 'String'>
+    readonly totalAmount: FieldRef<"Order", 'Float'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
   }
@@ -16016,6 +16154,14 @@ export namespace Prisma {
     status: 'status',
     storefront: 'storefront',
     userId: 'userId',
+    shippingFirstName: 'shippingFirstName',
+    shippingLastName: 'shippingLastName',
+    shippingEmail: 'shippingEmail',
+    shippingStreetAddress: 'shippingStreetAddress',
+    shippingCity: 'shippingCity',
+    shippingPostalCode: 'shippingPostalCode',
+    paymentReference: 'paymentReference',
+    totalAmount: 'totalAmount',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -16923,6 +17069,14 @@ export namespace Prisma {
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     storefront?: EnumStorefrontNullableFilter<"Order"> | $Enums.Storefront | null
     userId?: UuidFilter<"Order"> | string
+    shippingFirstName?: StringNullableFilter<"Order"> | string | null
+    shippingLastName?: StringNullableFilter<"Order"> | string | null
+    shippingEmail?: StringNullableFilter<"Order"> | string | null
+    shippingStreetAddress?: StringNullableFilter<"Order"> | string | null
+    shippingCity?: StringNullableFilter<"Order"> | string | null
+    shippingPostalCode?: StringNullableFilter<"Order"> | string | null
+    paymentReference?: StringNullableFilter<"Order"> | string | null
+    totalAmount?: FloatNullableFilter<"Order"> | number | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     orderItems?: OrderItemListRelationFilter
@@ -16935,6 +17089,14 @@ export namespace Prisma {
     status?: SortOrder
     storefront?: SortOrderInput | SortOrder
     userId?: SortOrder
+    shippingFirstName?: SortOrderInput | SortOrder
+    shippingLastName?: SortOrderInput | SortOrder
+    shippingEmail?: SortOrderInput | SortOrder
+    shippingStreetAddress?: SortOrderInput | SortOrder
+    shippingCity?: SortOrderInput | SortOrder
+    shippingPostalCode?: SortOrderInput | SortOrder
+    paymentReference?: SortOrderInput | SortOrder
+    totalAmount?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     orderItems?: OrderItemOrderByRelationAggregateInput
@@ -16950,6 +17112,14 @@ export namespace Prisma {
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     storefront?: EnumStorefrontNullableFilter<"Order"> | $Enums.Storefront | null
     userId?: UuidFilter<"Order"> | string
+    shippingFirstName?: StringNullableFilter<"Order"> | string | null
+    shippingLastName?: StringNullableFilter<"Order"> | string | null
+    shippingEmail?: StringNullableFilter<"Order"> | string | null
+    shippingStreetAddress?: StringNullableFilter<"Order"> | string | null
+    shippingCity?: StringNullableFilter<"Order"> | string | null
+    shippingPostalCode?: StringNullableFilter<"Order"> | string | null
+    paymentReference?: StringNullableFilter<"Order"> | string | null
+    totalAmount?: FloatNullableFilter<"Order"> | number | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     orderItems?: OrderItemListRelationFilter
@@ -16962,11 +17132,21 @@ export namespace Prisma {
     status?: SortOrder
     storefront?: SortOrderInput | SortOrder
     userId?: SortOrder
+    shippingFirstName?: SortOrderInput | SortOrder
+    shippingLastName?: SortOrderInput | SortOrder
+    shippingEmail?: SortOrderInput | SortOrder
+    shippingStreetAddress?: SortOrderInput | SortOrder
+    shippingCity?: SortOrderInput | SortOrder
+    shippingPostalCode?: SortOrderInput | SortOrder
+    paymentReference?: SortOrderInput | SortOrder
+    totalAmount?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: OrderCountOrderByAggregateInput
+    _avg?: OrderAvgOrderByAggregateInput
     _max?: OrderMaxOrderByAggregateInput
     _min?: OrderMinOrderByAggregateInput
+    _sum?: OrderSumOrderByAggregateInput
   }
 
   export type OrderScalarWhereWithAggregatesInput = {
@@ -16977,6 +17157,14 @@ export namespace Prisma {
     status?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
     storefront?: EnumStorefrontNullableWithAggregatesFilter<"Order"> | $Enums.Storefront | null
     userId?: UuidWithAggregatesFilter<"Order"> | string
+    shippingFirstName?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    shippingLastName?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    shippingEmail?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    shippingStreetAddress?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    shippingCity?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    shippingPostalCode?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    paymentReference?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    totalAmount?: FloatNullableWithAggregatesFilter<"Order"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
   }
@@ -17828,6 +18016,14 @@ export namespace Prisma {
     id?: string
     status?: $Enums.OrderStatus
     storefront?: $Enums.Storefront | null
+    shippingFirstName?: string | null
+    shippingLastName?: string | null
+    shippingEmail?: string | null
+    shippingStreetAddress?: string | null
+    shippingCity?: string | null
+    shippingPostalCode?: string | null
+    paymentReference?: string | null
+    totalAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutOrderInput
@@ -17840,6 +18036,14 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     storefront?: $Enums.Storefront | null
     userId: string
+    shippingFirstName?: string | null
+    shippingLastName?: string | null
+    shippingEmail?: string | null
+    shippingStreetAddress?: string | null
+    shippingCity?: string | null
+    shippingPostalCode?: string | null
+    paymentReference?: string | null
+    totalAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -17850,6 +18054,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     storefront?: NullableEnumStorefrontFieldUpdateOperationsInput | $Enums.Storefront | null
+    shippingFirstName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingStreetAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingCity?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutOrderNestedInput
@@ -17862,6 +18074,14 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     storefront?: NullableEnumStorefrontFieldUpdateOperationsInput | $Enums.Storefront | null
     userId?: StringFieldUpdateOperationsInput | string
+    shippingFirstName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingStreetAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingCity?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -17873,6 +18093,14 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     storefront?: $Enums.Storefront | null
     userId: string
+    shippingFirstName?: string | null
+    shippingLastName?: string | null
+    shippingEmail?: string | null
+    shippingStreetAddress?: string | null
+    shippingCity?: string | null
+    shippingPostalCode?: string | null
+    paymentReference?: string | null
+    totalAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17881,6 +18109,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     storefront?: NullableEnumStorefrontFieldUpdateOperationsInput | $Enums.Storefront | null
+    shippingFirstName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingStreetAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingCity?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17890,6 +18126,14 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     storefront?: NullableEnumStorefrontFieldUpdateOperationsInput | $Enums.Storefront | null
     userId?: StringFieldUpdateOperationsInput | string
+    shippingFirstName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingStreetAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingCity?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18805,8 +19049,20 @@ export namespace Prisma {
     status?: SortOrder
     storefront?: SortOrder
     userId?: SortOrder
+    shippingFirstName?: SortOrder
+    shippingLastName?: SortOrder
+    shippingEmail?: SortOrder
+    shippingStreetAddress?: SortOrder
+    shippingCity?: SortOrder
+    shippingPostalCode?: SortOrder
+    paymentReference?: SortOrder
+    totalAmount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type OrderAvgOrderByAggregateInput = {
+    totalAmount?: SortOrder
   }
 
   export type OrderMaxOrderByAggregateInput = {
@@ -18814,6 +19070,14 @@ export namespace Prisma {
     status?: SortOrder
     storefront?: SortOrder
     userId?: SortOrder
+    shippingFirstName?: SortOrder
+    shippingLastName?: SortOrder
+    shippingEmail?: SortOrder
+    shippingStreetAddress?: SortOrder
+    shippingCity?: SortOrder
+    shippingPostalCode?: SortOrder
+    paymentReference?: SortOrder
+    totalAmount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -18823,8 +19087,20 @@ export namespace Prisma {
     status?: SortOrder
     storefront?: SortOrder
     userId?: SortOrder
+    shippingFirstName?: SortOrder
+    shippingLastName?: SortOrder
+    shippingEmail?: SortOrder
+    shippingStreetAddress?: SortOrder
+    shippingCity?: SortOrder
+    shippingPostalCode?: SortOrder
+    paymentReference?: SortOrder
+    totalAmount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type OrderSumOrderByAggregateInput = {
+    totalAmount?: SortOrder
   }
 
   export type EnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -20207,6 +20483,14 @@ export namespace Prisma {
     id?: string
     status?: $Enums.OrderStatus
     storefront?: $Enums.Storefront | null
+    shippingFirstName?: string | null
+    shippingLastName?: string | null
+    shippingEmail?: string | null
+    shippingStreetAddress?: string | null
+    shippingCity?: string | null
+    shippingPostalCode?: string | null
+    paymentReference?: string | null
+    totalAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutOrderInput
@@ -20218,6 +20502,14 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     storefront?: $Enums.Storefront | null
     userId: string
+    shippingFirstName?: string | null
+    shippingLastName?: string | null
+    shippingEmail?: string | null
+    shippingStreetAddress?: string | null
+    shippingCity?: string | null
+    shippingPostalCode?: string | null
+    paymentReference?: string | null
+    totalAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -20349,6 +20641,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     storefront?: NullableEnumStorefrontFieldUpdateOperationsInput | $Enums.Storefront | null
+    shippingFirstName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingStreetAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingCity?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutOrderNestedInput
@@ -20360,6 +20660,14 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     storefront?: NullableEnumStorefrontFieldUpdateOperationsInput | $Enums.Storefront | null
     userId?: StringFieldUpdateOperationsInput | string
+    shippingFirstName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingStreetAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingCity?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -20395,6 +20703,14 @@ export namespace Prisma {
     id?: string
     status?: $Enums.OrderStatus
     storefront?: $Enums.Storefront | null
+    shippingFirstName?: string | null
+    shippingLastName?: string | null
+    shippingEmail?: string | null
+    shippingStreetAddress?: string | null
+    shippingCity?: string | null
+    shippingPostalCode?: string | null
+    paymentReference?: string | null
+    totalAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutOrderInput
@@ -20405,6 +20721,14 @@ export namespace Prisma {
     id?: string
     status?: $Enums.OrderStatus
     storefront?: $Enums.Storefront | null
+    shippingFirstName?: string | null
+    shippingLastName?: string | null
+    shippingEmail?: string | null
+    shippingStreetAddress?: string | null
+    shippingCity?: string | null
+    shippingPostalCode?: string | null
+    paymentReference?: string | null
+    totalAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -20528,6 +20852,14 @@ export namespace Prisma {
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     storefront?: EnumStorefrontNullableFilter<"Order"> | $Enums.Storefront | null
     userId?: UuidFilter<"Order"> | string
+    shippingFirstName?: StringNullableFilter<"Order"> | string | null
+    shippingLastName?: StringNullableFilter<"Order"> | string | null
+    shippingEmail?: StringNullableFilter<"Order"> | string | null
+    shippingStreetAddress?: StringNullableFilter<"Order"> | string | null
+    shippingCity?: StringNullableFilter<"Order"> | string | null
+    shippingPostalCode?: StringNullableFilter<"Order"> | string | null
+    paymentReference?: StringNullableFilter<"Order"> | string | null
+    totalAmount?: FloatNullableFilter<"Order"> | number | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
   }
@@ -21995,6 +22327,14 @@ export namespace Prisma {
     id?: string
     status?: $Enums.OrderStatus
     storefront?: $Enums.Storefront | null
+    shippingFirstName?: string | null
+    shippingLastName?: string | null
+    shippingEmail?: string | null
+    shippingStreetAddress?: string | null
+    shippingCity?: string | null
+    shippingPostalCode?: string | null
+    paymentReference?: string | null
+    totalAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reviews?: ReviewCreateNestedManyWithoutOrderInput
@@ -22006,6 +22346,14 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     storefront?: $Enums.Storefront | null
     userId: string
+    shippingFirstName?: string | null
+    shippingLastName?: string | null
+    shippingEmail?: string | null
+    shippingStreetAddress?: string | null
+    shippingCity?: string | null
+    shippingPostalCode?: string | null
+    paymentReference?: string | null
+    totalAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reviews?: ReviewUncheckedCreateNestedManyWithoutOrderInput
@@ -22078,6 +22426,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     storefront?: NullableEnumStorefrontFieldUpdateOperationsInput | $Enums.Storefront | null
+    shippingFirstName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingStreetAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingCity?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reviews?: ReviewUpdateManyWithoutOrderNestedInput
@@ -22089,6 +22445,14 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     storefront?: NullableEnumStorefrontFieldUpdateOperationsInput | $Enums.Storefront | null
     userId?: StringFieldUpdateOperationsInput | string
+    shippingFirstName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingStreetAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingCity?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reviews?: ReviewUncheckedUpdateManyWithoutOrderNestedInput
@@ -22158,6 +22522,14 @@ export namespace Prisma {
     id?: string
     status?: $Enums.OrderStatus
     storefront?: $Enums.Storefront | null
+    shippingFirstName?: string | null
+    shippingLastName?: string | null
+    shippingEmail?: string | null
+    shippingStreetAddress?: string | null
+    shippingCity?: string | null
+    shippingPostalCode?: string | null
+    paymentReference?: string | null
+    totalAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22207,6 +22579,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     storefront?: NullableEnumStorefrontFieldUpdateOperationsInput | $Enums.Storefront | null
+    shippingFirstName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingStreetAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingCity?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutOrderNestedInput
@@ -22217,6 +22597,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     storefront?: NullableEnumStorefrontFieldUpdateOperationsInput | $Enums.Storefront | null
+    shippingFirstName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingStreetAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingCity?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -22227,6 +22615,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     storefront?: NullableEnumStorefrontFieldUpdateOperationsInput | $Enums.Storefront | null
+    shippingFirstName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingStreetAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingCity?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

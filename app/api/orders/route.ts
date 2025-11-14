@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient, Prisma } from "@/generated/prisma";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
@@ -35,38 +36,43 @@ interface OrderWithTotals extends OrderWithItems {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, items, storefront = "LYLA" } = body;
+    const { shippingInfo, paymentReference, totalAmount } = body;
 
-    // Validate required fields
-    if (!userId || !items || !Array.isArray(items) || items.length === 0) {
+    // Get authenticated user
+    const cookies = request.cookies;
+    const token = cookies.get("token")?.value;
+
+    if (!token) {
       return NextResponse.json(
-        { error: "Missing required fields: userId, items" },
-        { status: 400 }
+        { error: "Authentication required" },
+        { status: 401 }
       );
     }
 
-    // Validate that all items have required fields
-    for (const item of items) {
-      if (!item.productId || !item.quantity || item.quantity <= 0) {
-        return NextResponse.json(
-          { error: "Each item must have productId and positive quantity" },
-          { status: 400 }
-        );
-      }
+    let userId: string;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+      userId = decoded.userId;
+    } catch (error) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+
+    // Validate required fields
+    if (!shippingInfo || !paymentReference) {
+      return NextResponse.json(
+        { error: "Missing required fields: shippingInfo, paymentReference" },
+        { status: 400 }
+      );
     }
 
     // Start a transaction to ensure data consistency
     const order = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
-        // Get cart items to preserve prices at time of order
+        // Get user's cart items
         const cartItems = await tx.cartItem.findMany({
           where: {
             cart: {
               userId,
-              storefront,
-            },
-            productId: {
-              in: items.map((item) => item.productId),
             },
           },
           include: {
@@ -74,91 +80,68 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        // Create a map of productId to priceAtTimeOfAddition
-        const priceMap = new Map(
-          cartItems.map((item) => [
-            item.productId,
-            item.priceAtTimeOfAddition || item.product.price,
-          ])
-        );
+        if (cartItems.length === 0) {
+          throw new Error("Cart is empty");
+        }
 
-        // Create the order
+        // Create the order with shipping info
         const newOrder = await tx.order.create({
           data: {
             userId,
-            storefront,
-            status: "PENDING",
+            storefront: "LYLA",
+            status: "PENDING", // Use PENDING instead of PAID until confirmed
+            shippingFirstName: shippingInfo.firstName,
+            shippingLastName: shippingInfo.lastName,
+            shippingEmail: shippingInfo.email,
+            shippingStreetAddress: shippingInfo.streetAddress,
+            shippingCity: shippingInfo.city,
+            shippingPostalCode: shippingInfo.postalCode,
+            paymentReference,
+            totalAmount,
           },
         });
 
         // Create order items with preserved prices
         await Promise.all(
-          items.map(
-            (item: { productId: string; quantity: number; size?: string }) => {
-              const priceAtTimeOfOrder = priceMap.get(item.productId) || 0;
-              return tx.orderItem.create({
-                data: {
-                  orderId: newOrder.id,
-                  productId: item.productId,
-                  quantity: item.quantity,
-                  size: item.size || null,
-                  priceAtTimeOfOrder,
-                },
-              });
-            }
-          )
+          cartItems.map((cartItem) => {
+            return tx.orderItem.create({
+              data: {
+                orderId: newOrder.id,
+                productId: cartItem.productId,
+                quantity: cartItem.quantity,
+                size: cartItem.size,
+                priceAtTimeOfOrder: cartItem.priceAtTimeOfAddition,
+              },
+            });
+          })
         );
 
-        // Fetch the complete order with items and product details
-        const completeOrder = await tx.order.findUnique({
-          where: { id: newOrder.id },
-          include: {
-            orderItems: {
-              include: {
-                product: {
-                  include: {
-                    images: true,
-                    category: true,
-                    subCategory: true,
-                  },
-                },
-              },
-            },
-            user: {
-              select: {
-                id: true,
-                firstname: true,
-                lastname: true,
-                email: true,
-              },
-            },
-          },
-        });
-
-        // Clear the user's cart after successful order creation
+        // Clear the cart
         await tx.cartItem.deleteMany({
           where: {
             cart: {
               userId,
-              storefront: storefront as any,
             },
           },
         });
 
-        return completeOrder;
+        // Return the created order with items
+        return await tx.order.findUnique({
+          where: { id: newOrder.id },
+          include: {
+            orderItems: {
+              include: {
+                product: true,
+              },
+            },
+          },
+        });
       }
     );
 
-    return NextResponse.json(
-      {
-        success: true,
-        order,
-        message: "Order created successfully",
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({ order });
   } catch (error) {
-    console.error("Error creating order:", error);
+    console.error("Order creation error:", error);
     return NextResponse.json(
       { error: "Failed to create order" },
       { status: 500 }
@@ -169,21 +152,28 @@ export async function POST(request: NextRequest) {
 // Get user orders
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-    const storefront = searchParams.get("storefront") || "LYLA";
+    // Get authenticated user
+    const cookies = request.cookies;
+    const token = cookies.get("token")?.value;
 
-    if (!userId) {
+    if (!token) {
       return NextResponse.json(
-        { error: "userId is required" },
-        { status: 400 }
+        { error: "Authentication required" },
+        { status: 401 }
       );
+    }
+
+    let userId: string;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+      userId = decoded.userId;
+    } catch (error) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     const orders = await prisma.order.findMany({
       where: {
         userId,
-        storefront: storefront as any,
       },
       include: {
         orderItems: {

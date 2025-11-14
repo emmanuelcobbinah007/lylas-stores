@@ -230,6 +230,14 @@ exports.Prisma.OrderScalarFieldEnum = {
   status: 'status',
   storefront: 'storefront',
   userId: 'userId',
+  shippingFirstName: 'shippingFirstName',
+  shippingLastName: 'shippingLastName',
+  shippingEmail: 'shippingEmail',
+  shippingStreetAddress: 'shippingStreetAddress',
+  shippingCity: 'shippingCity',
+  shippingPostalCode: 'shippingPostalCode',
+  paymentReference: 'paymentReference',
+  totalAmount: 'totalAmount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

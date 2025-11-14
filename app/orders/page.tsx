@@ -11,6 +11,7 @@ interface OrderItem {
   id: string;
   quantity: number;
   size: string | null;
+  priceAtTimeOfOrder: number | null;
   product: {
     id: string;
     name: string;
@@ -37,6 +38,8 @@ const formatOrderStatus = (status: string) => {
       return "Processing";
     case "PENDING":
       return "Pending";
+    case "PAID":
+      return "Paid";
     case "CANCELLED":
       return "Cancelled";
     default:
@@ -61,18 +64,24 @@ const getStatusColorClasses = (status: string) => {
 
 const OrdersPage: React.FC = () => {
   const [user, setUser] = useState<any>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userStr = localStorage.getItem("user");
-    if (token && userStr) {
+    const fetchUser = async () => {
       try {
-        const storedUser = JSON.parse(userStr);
-        setUser(storedUser);
+        const response = await fetch("/api/auth/me");
+        if (response.ok) {
+          const { user: userData } = await response.json();
+          setUser(userData);
+        }
       } catch (error) {
-        console.error("Error parsing user:", error);
+        console.error("Error fetching user:", error);
+      } finally {
+        setIsLoadingUser(false);
       }
-    }
+    };
+
+    fetchUser();
   }, []);
 
   const {
@@ -83,9 +92,7 @@ const OrdersPage: React.FC = () => {
     queryKey: ["orders", user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("No user");
-      const response = await axios.get(
-        `/api/orders?userId=${user.id}&storefront=LYLA`
-      );
+      const response = await axios.get(`/api/orders`);
       if (response.data.success) {
         return response.data.orders;
       }
@@ -112,7 +119,7 @@ const OrdersPage: React.FC = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoadingUser || isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
@@ -279,9 +286,10 @@ const OrdersPage: React.FC = () => {
                               )}
                               <p className="text-sm font-semibold text-gray-900 font-poppins">
                                 ₵
-                                {(item.product.price * item.quantity).toFixed(
-                                  2
-                                )}
+                                {(
+                                  (item.priceAtTimeOfOrder ||
+                                    item.product.price) * item.quantity
+                                ).toFixed(2)}
                               </p>
                             </div>
                           </div>
@@ -306,7 +314,10 @@ const OrdersPage: React.FC = () => {
                           {order.orderItems
                             .reduce(
                               (sum: number, item: OrderItem) =>
-                                sum + item.product.price * item.quantity,
+                                sum +
+                                (item.priceAtTimeOfOrder ||
+                                  item.product.price) *
+                                  item.quantity,
                               0
                             )
                             .toFixed(2)}
