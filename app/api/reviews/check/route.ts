@@ -7,7 +7,9 @@ const prisma = new PrismaClient();
 // GET /api/reviews/check - Check if user has reviewed all products in an order
 export async function GET(request: NextRequest) {
   try {
-    const token = request.headers.get("authorization")?.replace("Bearer ", "");
+    // Get authenticated user from cookies
+    const cookies = request.cookies;
+    const token = cookies.get("token")?.value;
 
     if (!token) {
       return NextResponse.json(
@@ -19,26 +21,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let decoded: { userId?: string; id?: string } | undefined;
+    let userId: string;
     try {
-      decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET || "fallback-secret"
-      ) as { userId?: string; id?: string };
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+      userId = decoded.userId;
     } catch (error) {
-      // Try with fallback secret for backward compatibility
-      try {
-        decoded = jwt.verify(token, "fallback-secret") as {
-          userId?: string;
-          id?: string;
-        };
-      } catch {
-        throw error; // Throw original error if both fail
-      }
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid token",
+        },
+        { status: 401 }
+      );
     }
-
-    // Handle both old format (id) and new format (userId)
-    const userId = decoded?.userId || decoded?.id;
 
     const { searchParams } = new URL(request.url);
     const orderId = searchParams.get("orderId");
@@ -63,7 +58,11 @@ export async function GET(request: NextRequest) {
       include: {
         orderItems: {
           include: {
-            product: true,
+            product: {
+              include: {
+                images: true,
+              },
+            },
           },
         },
       },
@@ -99,6 +98,7 @@ export async function GET(request: NextRequest) {
       .map((item) => ({
         id: item.product.id,
         name: item.product.name,
+        images: item.product.images.map((img: any) => ({ url: img.url })),
       }));
 
     return NextResponse.json({

@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
+import ReviewModal from "../components/modals/ReviewModal";
 
 interface OrderItem {
   id: string;
@@ -28,6 +29,13 @@ interface Order {
   orderItems: OrderItem[];
   total: number;
   itemCount: number;
+}
+
+interface ReviewStatus {
+  hasReviewedAll: boolean;
+  totalProducts: number;
+  reviewedProducts: number;
+  unreviewedProducts: { id: string; name: string; images: { url: string }[] }[];
 }
 
 const formatOrderStatus = (status: string) => {
@@ -65,6 +73,12 @@ const getStatusColorClasses = (status: string) => {
 const OrdersPage: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [reviewStatuses, setReviewStatuses] = useState<
+    Record<string, ReviewStatus>
+  >({});
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedOrderForReview, setSelectedOrderForReview] =
+    useState<Order | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -107,6 +121,17 @@ const OrdersPage: React.FC = () => {
     }
   }, [error]);
 
+  // Check review status for completed orders
+  useEffect(() => {
+    if (orders) {
+      orders.forEach((order) => {
+        if (order.status === "COMPLETED" && !reviewStatuses[order.id]) {
+          checkReviewStatus(order.id);
+        }
+      });
+    }
+  }, [orders]);
+
   const handleReorderItems = (order: Order) => {
     if (order.orderItems.length > 1) {
       toast.info("Redirecting to shop page to reorder multiple items");
@@ -116,6 +141,32 @@ const OrdersPage: React.FC = () => {
       const productId = order.orderItems[0].product.id;
       // Assuming product page exists
       window.location.href = `/discover/${productId}`;
+    }
+  };
+
+  const checkReviewStatus = async (orderId: string) => {
+    try {
+      const response = await axios.get(`/api/reviews/check?orderId=${orderId}`);
+      if (response.data.success) {
+        setReviewStatuses((prev) => ({
+          ...prev,
+          [orderId]: response.data,
+        }));
+      }
+    } catch (error) {
+      console.error("Error checking review status:", error);
+    }
+  };
+
+  const handleLeaveReview = (order: Order) => {
+    setSelectedOrderForReview(order);
+    setReviewModalOpen(true);
+  };
+
+  const handleReviewSubmitted = () => {
+    // Refresh review status for the order
+    if (selectedOrderForReview) {
+      checkReviewStatus(selectedOrderForReview.id);
     }
   };
 
@@ -335,6 +386,31 @@ const OrdersPage: React.FC = () => {
                           >
                             Reorder Items
                           </button>
+                          {reviewStatuses[order.id] ? (
+                            reviewStatuses[order.id].hasReviewedAll ? (
+                              <div className="flex-1 px-4 py-2 bg-green-100 text-green-800 rounded-lg font-medium font-poppins flex items-center justify-center">
+                                <span className="mr-2">✓</span>
+                                Reviews Submitted
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => handleLeaveReview(order)}
+                                className="flex-1 px-4 py-2 border border-gray-900 text-gray-900 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium font-poppins"
+                              >
+                                Leave a Review (
+                                {
+                                  reviewStatuses[order.id].unreviewedProducts
+                                    .length
+                                }{" "}
+                                remaining)
+                              </button>
+                            )
+                          ) : (
+                            <div className="flex-1 px-4 py-2 bg-gray-100 text-gray-500 rounded-lg font-medium font-poppins flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 mr-2"></div>
+                              Checking reviews...
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -357,6 +433,19 @@ const OrdersPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Review Modal */}
+      {selectedOrderForReview && reviewStatuses[selectedOrderForReview.id] && (
+        <ReviewModal
+          isOpen={reviewModalOpen}
+          onClose={() => setReviewModalOpen(false)}
+          orderId={selectedOrderForReview.id}
+          unreviewedProducts={
+            reviewStatuses[selectedOrderForReview.id].unreviewedProducts
+          }
+          onReviewSubmitted={handleReviewSubmitted}
+        />
+      )}
     </div>
   );
 };
