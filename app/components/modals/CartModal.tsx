@@ -66,6 +66,14 @@ export default function CartModal({
     city: "",
     postalCode: "",
   });
+  const [promoCode, setPromoCode] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState<{
+    code: string;
+    discountType: "PERCENTAGE" | "FIXED";
+    discountValue: number;
+    discountAmount: number;
+  } | null>(null);
+  const [promoLoading, setPromoLoading] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   useEffect(() => {
@@ -180,6 +188,20 @@ export default function CartModal({
   };
 
   const getTotalPrice = () => {
+    const subtotal = (cart?.cartItems || []).reduce(
+      (total, item) => total + getItemPrice(item) * item.quantity,
+      0
+    );
+
+    // Apply promo code discount
+    if (appliedPromo) {
+      return Math.max(0, subtotal - appliedPromo.discountAmount);
+    }
+
+    return subtotal;
+  };
+
+  const getSubtotal = () => {
     return (cart?.cartItems || []).reduce(
       (total, item) => total + getItemPrice(item) * item.quantity,
       0
@@ -246,7 +268,8 @@ export default function CartModal({
       console.log("Creating order with data:", {
         shippingInfo,
         paymentReference: reference,
-        totalAmount: data.amount / 100,
+        totalAmount: getTotalPrice(),
+        promoCode: appliedPromo?.code,
       });
       const orderRes = await fetch("/api/orders", {
         method: "POST",
@@ -256,7 +279,8 @@ export default function CartModal({
         body: JSON.stringify({
           shippingInfo,
           paymentReference: reference,
-          totalAmount: data.amount / 100, // Convert from kobo to GHS
+          totalAmount: getTotalPrice(), // Use our calculated total instead of Paystack's amount
+          promoCode: appliedPromo?.code,
         }),
       });
 
@@ -302,6 +326,52 @@ export default function CartModal({
     setIsProcessingPayment(false);
   };
 
+  const validatePromoCode = async () => {
+    if (!promoCode.trim()) {
+      toast.error("Please enter a promo code");
+      return;
+    }
+
+    setPromoLoading(true);
+    try {
+      const response = await fetch("/api/promo-codes/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          code: promoCode.trim(),
+          userId: user?.id,
+          orderTotal: getTotalPrice(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setAppliedPromo(data.discount);
+        toast.success(
+          `Promo code applied! ${data.discount.discountAmount.toFixed(
+            2
+          )} discount`
+        );
+      } else {
+        toast.error(data.error || "Invalid promo code");
+      }
+    } catch (error) {
+      console.error("Promo code validation error:", error);
+      toast.error("Failed to validate promo code");
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const removePromoCode = () => {
+    setAppliedPromo(null);
+    setPromoCode("");
+    toast.info("Promo code removed");
+  };
+
   const renderCheckoutView = () => {
     const items = cart?.cartItems || [];
 
@@ -326,8 +396,18 @@ export default function CartModal({
                     </span>
                   </div>
                 ))}
-                <div className="border-t border-gray-200 pt-2 mt-2">
-                  <div className="flex justify-between font-poppins font-semibold">
+                <div className="border-t border-gray-200 pt-2 mt-2 space-y-1">
+                  <div className="flex justify-between text-sm font-poppins">
+                    <span>Subtotal</span>
+                    <span>₵{getSubtotal().toFixed(2)}</span>
+                  </div>
+                  {appliedPromo && (
+                    <div className="flex justify-between text-sm font-poppins text-green-600">
+                      <span>Discount ({appliedPromo.code})</span>
+                      <span>-₵{appliedPromo.discountAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between font-poppins font-semibold border-t border-gray-300 pt-1">
                     <span>Total</span>
                     <span>₵{getTotalPrice().toFixed(2)}</span>
                   </div>
@@ -418,6 +498,59 @@ export default function CartModal({
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Promo Code */}
+            <div>
+              <h3 className="font-poppins font-medium text-gray-900 mb-3">
+                Promo Code
+              </h3>
+              {!appliedPromo ? (
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Enter promo code"
+                      value={promoCode}
+                      onChange={(e) =>
+                        setPromoCode(e.target.value.toUpperCase())
+                      }
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 font-poppins text-sm uppercase"
+                      disabled={promoLoading}
+                    />
+                    <button
+                      onClick={validatePromoCode}
+                      disabled={promoLoading || !promoCode.trim()}
+                      className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors duration-200 font-poppins text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {promoLoading ? "Applying..." : "Apply"}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 font-poppins">
+                    Enter your promo code to get a discount
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="font-poppins font-medium text-green-800">
+                        {appliedPromo.code}
+                      </span>
+                      <span className="text-sm text-green-600">
+                        -₵{appliedPromo.discountAmount.toFixed(2)}
+                      </span>
+                    </div>
+                    <button
+                      onClick={removePromoCode}
+                      className="text-green-600 hover:text-green-800 transition-colors duration-200"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Payment Information */}

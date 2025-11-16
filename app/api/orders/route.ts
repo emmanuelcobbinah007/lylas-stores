@@ -36,7 +36,7 @@ interface OrderWithTotals extends OrderWithItems {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { shippingInfo, paymentReference, totalAmount } = body;
+    const { shippingInfo, paymentReference, totalAmount, promoCode } = body;
 
     // Get authenticated user
     const cookies = request.cookies;
@@ -84,7 +84,41 @@ export async function POST(request: NextRequest) {
           throw new Error("Cart is empty");
         }
 
-        // Create the order with shipping info
+        // Calculate subtotal for discount validation
+        const subtotal = cartItems.reduce(
+          (total, item) =>
+            total +
+            (item.priceAtTimeOfAddition || item.product.price) * item.quantity,
+          0
+        );
+
+        // Calculate discount if promo code is provided
+        let discountAmount = 0;
+        let promoCodeRecord = null;
+        if (promoCode) {
+          promoCodeRecord = await tx.promoCode.findUnique({
+            where: { code: promoCode.toUpperCase() },
+          });
+
+          if (promoCodeRecord) {
+            if (promoCodeRecord.discountType === "PERCENTAGE") {
+              discountAmount = (subtotal * promoCodeRecord.discountValue) / 100;
+            } else {
+              discountAmount = promoCodeRecord.discountValue;
+            }
+            // Ensure discount doesn't exceed subtotal
+            discountAmount = Math.min(discountAmount, subtotal);
+          }
+        }
+
+        // Validate that the provided totalAmount matches our calculation
+        const expectedTotal = subtotal - discountAmount;
+        if (Math.abs(totalAmount - expectedTotal) > 0.01) {
+          // Allow for small rounding differences
+          throw new Error("Total amount mismatch");
+        }
+
+        // Create the order with shipping info and validated total
         const newOrder = await tx.order.create({
           data: {
             userId,
@@ -115,6 +149,19 @@ export async function POST(request: NextRequest) {
             });
           })
         );
+
+        // Handle promo code usage if provided
+        if (promoCodeRecord) {
+          // Create promo code usage record
+          await tx.promoCodeUsage.create({
+            data: {
+              promoCodeId: promoCodeRecord.id,
+              userId,
+              orderId: newOrder.id,
+              discountApplied: discountAmount,
+            },
+          });
+        }
 
         // Clear the cart
         await tx.cartItem.deleteMany({
