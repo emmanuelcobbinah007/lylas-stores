@@ -128,7 +128,7 @@ const Navigation = () => {
           className={`flex items-center justify-between px-6 py-2 transition-all duration-300 ${
             isScrolled
               ? "bg-white/80 backdrop-blur-md rounded-full shadow-sm border border-gray-200"
-              : "bg-transparent border border-gray-50"
+              : "bg-transparent border border-transparent"
           }`}
         >
           {/* Logo */}

@@ -253,6 +253,38 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.StorewideSaleScalarFieldEnum = {
+  id: 'id',
+  storefront: 'storefront',
+  isActive: 'isActive',
+  discountPercent: 'discountPercent',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PromoCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  isActive: 'isActive',
+  usageLimit: 'usageLimit',
+  perUserLimit: 'perUserLimit',
+  expiresAt: 'expiresAt',
+  storefront: 'storefront',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PromoCodeUsageScalarFieldEnum = {
+  id: 'id',
+  promoCodeId: 'promoCodeId',
+  userId: 'userId',
+  orderId: 'orderId',
+  discountApplied: 'discountApplied',
+  usedAt: 'usedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -297,6 +329,11 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   CANCELLED: 'CANCELLED'
 };
 
+exports.DiscountType = exports.$Enums.DiscountType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED: 'FIXED'
+};
+
 exports.Prisma.ModelName = {
   Review: 'Review',
   User: 'User',
@@ -309,7 +346,10 @@ exports.Prisma.ModelName = {
   Cart: 'Cart',
   CartItem: 'CartItem',
   Order: 'Order',
-  OrderItem: 'OrderItem'
+  OrderItem: 'OrderItem',
+  StorewideSale: 'StorewideSale',
+  PromoCode: 'PromoCode',
+  PromoCodeUsage: 'PromoCodeUsage'
 };
 
 /**

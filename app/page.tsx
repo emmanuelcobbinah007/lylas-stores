@@ -4,11 +4,14 @@ import BrandStory from "./components/BrandStory";
 import FeaturedProducts from "./components/FeaturedProducts";
 import InteriorInspiration from "./components/InteriorInspiration";
 import NewsletterCTA from "./components/NewsletterCTA";
+import { getActiveStorewideSale } from "@/../lib/getActiveStorewideSale";
 
-const page = () => {
+const page = async () => {
+  const activeSale = await getActiveStorewideSale();
+
   return (
     <div className="relative">
-      <Hero />
+      <Hero activeSale={activeSale} />
       <BrandStory />
       <FeaturedProducts />
       <InteriorInspiration />
