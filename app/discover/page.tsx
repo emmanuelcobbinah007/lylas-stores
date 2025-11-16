@@ -6,6 +6,7 @@ import ProductCard from "../components/ProductCard";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type Product = {
   id: string;
@@ -39,6 +40,10 @@ function DiscoverContent() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const itemsPerPage = 20;
 
   // Fetch categories for mapping
   const { data: categoriesData } = useQuery({
@@ -72,10 +77,26 @@ function DiscoverContent() {
 
   // Fetch products
   const { data: productsData, isLoading } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", activeCategory, currentPage],
     queryFn: async () => {
-      const response = await axios.get("/api/products");
-      return response.data.products as Product[];
+      let url = `/api/products?page=${currentPage}&limit=${itemsPerPage}`;
+
+      // Add category filter if not "All"
+      if (activeCategory !== "All") {
+        if (activeCategory === "On Sale") {
+          // For "On Sale", we'll filter client-side since API doesn't have direct support
+          url += `&inStock=true`;
+        } else {
+          // Use category ID for filtering
+          const categoryId = categoryNameToIdMap[activeCategory];
+          if (categoryId) {
+            url += `&categoryId=${categoryId}`;
+          }
+        }
+      }
+
+      const response = await axios.get(url);
+      return response.data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     enabled: mounted, // Only fetch after component mounts
@@ -85,53 +106,40 @@ function DiscoverContent() {
     setMounted(true);
   }, []);
 
+  // Handle products data and pagination
+  useEffect(() => {
+    if (!productsData) return;
+
+    let products = productsData.products || [];
+
+    // Handle "On Sale" filtering client-side since API doesn't have direct support
+    if (activeCategory === "On Sale") {
+      products = products.filter((product: Product) => product.isOnSale);
+    }
+
+    setFilteredProducts(products);
+    setTotalPages(productsData.pagination?.totalPages || 1);
+    setTotalCount(productsData.pagination?.totalCount || 0);
+  }, [productsData, activeCategory]);
+
   // Get category from URL params on mount and when params change
   useEffect(() => {
-    if (!productsData || !mounted) return;
+    if (!mounted) return;
 
     const categoryParam = searchParams.get("category");
     if (categoryParam && categoryMap[categoryParam]) {
       const displayCategory = categoryMap[categoryParam];
       setActiveCategory(displayCategory);
-      // Use category ID for filtering
-      const categoryId = categoryNameToIdMap[displayCategory];
-      if (categoryId) {
-        setFilteredProducts(
-          productsData.filter(
-            (product: Product) => product.categoryId === categoryId
-          )
-        );
-      } else {
-        setFilteredProducts(productsData);
-      }
+      setCurrentPage(1); // Reset to first page when category changes
     } else {
       setActiveCategory("All");
-      setFilteredProducts(productsData);
+      setCurrentPage(1); // Reset to first page
     }
-  }, [searchParams, productsData, mounted, categoryNameToIdMap]);
+  }, [searchParams, mounted]);
 
   const handleCategoryClick = (category: string) => {
     setActiveCategory(category);
-    if (!productsData) return;
-    if (category === "All") {
-      setFilteredProducts(productsData);
-    } else if (category === "On Sale") {
-      setFilteredProducts(
-        productsData.filter((product: Product) => product.isOnSale)
-      );
-    } else {
-      // Use category ID for filtering
-      const categoryId = categoryNameToIdMap[category];
-      if (categoryId) {
-        setFilteredProducts(
-          productsData.filter(
-            (product: Product) => product.categoryId === categoryId
-          )
-        );
-      } else {
-        setFilteredProducts(productsData);
-      }
-    }
+    setCurrentPage(1); // Reset to first page when category changes
   };
 
   // Prevent hydration mismatch by not rendering until mounted
@@ -252,6 +260,37 @@ function DiscoverContent() {
                     index={index}
                   />
                 ))}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center space-x-4 mt-12">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(1, prev - 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-poppins disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  Previous
+                </button>
+
+                <span className="text-gray-600 font-poppins">
+                  Page {currentPage} of {totalPages} ({totalCount} products)
+                </span>
+
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-poppins disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </button>
               </div>
             )}
           </div>

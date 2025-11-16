@@ -277,7 +277,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         className="space-y-4"
       >
         <h3 className="text-lg font-playfair text-gray-900">Description</h3>
-        <p className="text-gray-700 leading-relaxed font-poppins">
+        <p className="text-gray-700 leading-relaxed font-poppins whitespace-pre-wrap">
           {product.description}
         </p>
       </motion.div>
