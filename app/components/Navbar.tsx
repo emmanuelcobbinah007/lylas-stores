@@ -24,6 +24,9 @@ const Navigation = () => {
   const [isDiscoverHovered, setIsDiscoverHovered] = useState(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [cartModalInitialView, setCartModalInitialView] = useState<
+    "cart" | "checkout"
+  >("cart");
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [mobileView, setMobileView] = useState<
     "menu" | "search" | "user" | "cart"
@@ -71,6 +74,27 @@ const Navigation = () => {
     }
   }, [categoriesData]);
 
+  // Handle buy now functionality
+  useEffect(() => {
+    const handleOpenCartModal = () => {
+      openCartModal("checkout");
+    };
+
+    // Check if buy now was triggered
+    const buyNowFlag = localStorage.getItem("buyNow");
+    if (buyNowFlag === "true") {
+      localStorage.removeItem("buyNow");
+      openCartModal("checkout");
+    }
+
+    // Listen for cart modal open events
+    window.addEventListener("openCartModal", handleOpenCartModal);
+
+    return () => {
+      window.removeEventListener("openCartModal", handleOpenCartModal);
+    };
+  }, []);
+
   const navItems = [
     { href: "/discover", label: "Discover" },
     { href: "/about", label: "About" },
@@ -95,7 +119,8 @@ const Navigation = () => {
     setIsUserModalOpen(false);
   };
 
-  const openCartModal = () => {
+  const openCartModal = (initialView: "cart" | "checkout" = "cart") => {
+    setCartModalInitialView(initialView);
     setIsCartModalOpen(true);
     setIsMobileMenuOpen(false);
   };
@@ -253,7 +278,7 @@ const Navigation = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.4, ease: "easeOut" }}
               onClick={openSearchModal}
-              className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
+              className="hover:cursor-pointer p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
               aria-label="Search"
             >
               <Search className="h-5 w-5" />
@@ -263,7 +288,7 @@ const Navigation = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.5, ease: "easeOut" }}
               onClick={openUserModal}
-              className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
+              className="hover:cursor-pointer p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
               aria-label="User account"
             >
               <User className="h-5 w-5" />
@@ -272,8 +297,8 @@ const Navigation = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
-              onClick={openCartModal}
-              className="p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
+              onClick={() => openCartModal("cart")}
+              className="hover:cursor-pointer p-2 text-gray-700 hover:text-primary-teal transition-colors duration-300"
               aria-label="Shopping cart"
             >
               <ShoppingCart className="h-5 w-5" />
@@ -426,6 +451,7 @@ const Navigation = () => {
                       isOpen={true}
                       onClose={() => setMobileView("menu")}
                       isMobileInline={true}
+                      initialView={cartModalInitialView}
                     />
                   ) : null}
                 </motion.div>
@@ -437,7 +463,11 @@ const Navigation = () => {
 
       {/* Modals */}
       <UserModal isOpen={isUserModalOpen} onClose={closeUserModal} />
-      <CartModal isOpen={isCartModalOpen} onClose={closeCartModal} />
+      <CartModal
+        isOpen={isCartModalOpen}
+        onClose={closeCartModal}
+        initialView={cartModalInitialView}
+      />
       <SearchModal isOpen={isSearchModalOpen} onClose={closeSearchModal} />
     </header>
   );

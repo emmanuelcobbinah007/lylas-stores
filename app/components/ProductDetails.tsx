@@ -72,10 +72,43 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     }
   };
 
-  const handleBuyNow = () => {
-    // Buy now logic here
-    console.log(`Buy Now clicked for ${quantity} of ${product.name}`);
-    // Could redirect to checkout or process immediate purchase
+  const handleBuyNow = async () => {
+    if (!product.inStock) return;
+
+    setIsAddingToCart(true);
+    try {
+      // Check if user is authenticated
+      const authResponse = await axios.get("/api/auth/me");
+      if (!authResponse.data.user) {
+        toast.error("Please log in to add items to your cart");
+        return;
+      }
+
+      // Add to cart
+      const response = await axios.post("/api/cart", {
+        productId: product.id,
+        quantity,
+      });
+
+      if (response.data.cart) {
+        toast.success(`${quantity} ${product.name} added to cart!`);
+
+        // Set flag to open cart modal for checkout
+        localStorage.setItem("buyNow", "true");
+
+        // Trigger cart modal open by dispatching a custom event
+        window.dispatchEvent(new CustomEvent("openCartModal"));
+      }
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.error("Please log in to add items to your cart");
+      } else {
+        toast.error("Failed to add item to cart. Please try again.");
+      }
+      console.error("Error adding to cart:", error);
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const handleShare = async () => {

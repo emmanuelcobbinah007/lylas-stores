@@ -40,6 +40,7 @@ type CartModalProps = {
   isOpen: boolean;
   onClose: () => void;
   isMobileInline?: boolean;
+  initialView?: ViewState;
 };
 
 type ViewState = "cart" | "checkout";
@@ -48,6 +49,7 @@ export default function CartModal({
   isOpen,
   onClose,
   isMobileInline = false,
+  initialView = "cart",
 }: CartModalProps) {
   // Lock body scroll while modal is open to prevent background scrolling / overscroll on mobile
   useLockBodyScroll(isOpen);
@@ -78,9 +80,10 @@ export default function CartModal({
 
   useEffect(() => {
     if (isOpen) {
+      setCurrentView(initialView);
       fetchUserAndCart();
     }
-  }, [isOpen]);
+  }, [isOpen, initialView]);
 
   const fetchUserAndCart = async () => {
     setLoading(true);
