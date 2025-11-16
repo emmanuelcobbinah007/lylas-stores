@@ -54,6 +54,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
   }, [isOpen]);
 
   const handleClose = () => {
+    console.log("The modal is closing");
     setIsVisible(false);
     // Delay calling onClose to allow exit animation to complete
     setTimeout(() => {
@@ -136,9 +137,11 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
               duration: 0.3,
             }}
             className="fixed inset-0 flex items-center justify-center z-50 p-4"
-            onClick={(e) => e.stopPropagation()}
           >
-            <div className="shadow-xl bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div
+              className="shadow-xl bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
               {/* Header */}
               <div className="flex justify-between items-center p-6 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-900 font-playfair">

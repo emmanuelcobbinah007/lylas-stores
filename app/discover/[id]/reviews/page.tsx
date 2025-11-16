@@ -1,14 +1,17 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ProductImageGallery from "../../components/ProductImageGallery";
-import ProductDetails from "../../components/ProductDetails";
-import ProductCard from "../../components/ProductCard";
-import { ChevronRight, Star } from "lucide-react";
+import {
+  ChevronRight,
+  Star,
+  ChevronLeft,
+  ChevronRight as ChevronRightIcon,
+} from "lucide-react";
 import axios from "axios";
 
 type Props = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string }>;
 };
 
 export async function generateMetadata({ params }: Props) {
@@ -29,8 +32,8 @@ export async function generateMetadata({ params }: Props) {
     }
 
     return {
-      title: `${product.name} - Lyla's`,
-      description: product.description,
+      title: `Reviews for ${product.name} - Lyla's`,
+      description: `Read customer reviews for ${product.name}`,
     };
   } catch (error) {
     return {
@@ -39,44 +42,45 @@ export async function generateMetadata({ params }: Props) {
   }
 }
 
-export default async function ProductPage({ params }: Props) {
+export default async function ProductReviewsPage({
+  params,
+  searchParams,
+}: Props) {
   const { id } = await params;
+  const { page = "1" } = await searchParams;
+  const currentPage = parseInt(page, 10) || 1;
+  const reviewsPerPage = 10;
 
   try {
-    const response = await axios.get(
+    // Fetch product
+    const productResponse = await axios.get(
       `${
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
       }/api/products/${id}`
     );
-    const product = response.data.product;
+    const product = productResponse.data.product;
 
     if (!product) {
       notFound();
     }
 
-    // Get related products (same category, limit 3)
-    const relatedResponse = await axios.get(
-      `${
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
-      }/api/products?limit=4`
-    );
-    const allProducts = relatedResponse.data.products;
-    const relatedProducts = allProducts
-      .filter(
-        (p: any) => p.id !== product.id && p.category === product.category
-      )
-      .slice(0, 3);
-
-    // Get reviews for this product
+    // Fetch all reviews
     const reviewsResponse = await axios.get(
       `${
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
       }/api/reviews?productId=${id}`
     );
-    const reviews = reviewsResponse.data.reviews || [];
+    const allReviews = reviewsResponse.data.reviews || [];
+
+    // Pagination
+    const totalReviews = allReviews.length;
+    const totalPages = Math.ceil(totalReviews / reviewsPerPage);
+    const startIndex = (currentPage - 1) * reviewsPerPage;
+    const endIndex = startIndex + reviewsPerPage;
+    const reviews = allReviews.slice(startIndex, endIndex);
 
     return (
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="my-28"></div>
         <main className="min-h-screen">
           {/* Breadcrumb */}
@@ -97,52 +101,35 @@ export default async function ProductPage({ params }: Props) {
                   Discover
                 </Link>
                 <ChevronRight className="w-4 h-4" />
-                <span className="text-gray-900">{product.name}</span>
+                <Link
+                  href={`/discover/${id}`}
+                  className="hover:text-gray-900 transition-colors duration-200"
+                >
+                  {product.name}
+                </Link>
+                <ChevronRight className="w-4 h-4" />
+                <span className="text-gray-900">Reviews</span>
               </nav>
             </div>
           </section>
 
-          {/* Product Content */}
-          <section className="pb-16">
-            <div className="container mx-auto px-6 md:px-8">
-              <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-                {/* Product Images */}
-                <div>
-                  <ProductImageGallery
-                    images={product.images.map(
-                      (url: string, index: number) => ({
-                        id: `image-${index}`,
-                        src: url,
-                        alt: `${product.name} - Image ${index + 1}`,
-                      })
-                    )}
-                    productName={product.name}
-                  />
-                </div>
-
-                {/* Product Details */}
-                <div>
-                  <ProductDetails product={product} />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Reviews */}
+          {/* Header */}
           <section className="py-16">
-            <div className="container max-w-5xl mx-auto px-6 md:px-8">
+            <div className="container mx-auto px-6 md:px-8">
               <div className="text-center mb-12">
-                <h2 className="text-2xl md:text-3xl font-playfair text-gray-900 mb-4">
-                  Customer Reviews
-                </h2>
+                <h1 className="text-3xl md:text-4xl font-playfair text-gray-900 mb-4">
+                  Customer Reviews for {product.name}
+                </h1>
                 <p className="text-gray-600 font-poppins">
-                  See what others are saying about this product
+                  {totalReviews} review{totalReviews !== 1 ? "s" : ""} • Page{" "}
+                  {currentPage} of {totalPages}
                 </p>
               </div>
 
+              {/* Reviews */}
               {reviews.length > 0 ? (
                 <div className="space-y-6">
-                  {reviews.slice(0, 3).map((review: any) => {
+                  {reviews.map((review: any) => {
                     const name = review.user
                       ? `${review.user.firstname} ${review.user.lastname}`.trim()
                       : null;
@@ -167,7 +154,7 @@ export default async function ProductPage({ params }: Props) {
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Star
                               key={star}
-                              className={`w-4 h-4 ${
+                              className={`w-5 h-5 ${
                                 star <= review.rating
                                   ? "text-yellow-400 fill-current"
                                   : "text-gray-300"
@@ -175,54 +162,60 @@ export default async function ProductPage({ params }: Props) {
                             />
                           ))}
                         </div>
-                        <p className="text-gray-700 font-poppins">
+                        <p className="text-gray-700 font-poppins mb-4">
                           {review.comment}
                         </p>
-                        <p className="text-sm text-gray-500 mt-2">
-                          - {displayName}
+                        <p className="text-sm text-gray-500">- {displayName}</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {new Date(review.createdAt).toLocaleDateString()}
                         </p>
                       </div>
                     );
                   })}
-                  {reviews.length > 3 && (
-                    <div className="text-center mt-8">
-                      <Link
-                        href={`/discover/${id}/reviews`}
-                        className="inline-block px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium font-poppins"
-                      >
-                        Read All Reviews ({reviews.length})
-                      </Link>
-                    </div>
-                  )}
                 </div>
               ) : (
                 <p className="text-center text-gray-600">
                   No reviews yet. Be the first to review this product!
                 </p>
               )}
-            </div>
-          </section>
 
-          {/* Related Products */}
-          <section className="py-16 bg-gray-50">
-            <div className="container mx-auto px-6 md:px-8">
-              <div className="text-center mb-12">
-                <h2 className="text-2xl md:text-3xl font-playfair text-gray-900 mb-4">
-                  You Might Also Like
-                </h2>
-                <p className="text-gray-600 font-poppins">
-                  Discover more pieces to complete your space
-                </p>
-              </div>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center space-x-4 mt-12">
+                  {currentPage > 1 && (
+                    <Link
+                      href={`/discover/${id}/reviews?page=${currentPage - 1}`}
+                      className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-poppins"
+                    >
+                      <ChevronLeft className="w-4 h-4 mr-2" />
+                      Previous
+                    </Link>
+                  )}
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {relatedProducts.map((relatedProduct: any, index: number) => (
-                  <ProductCard
-                    key={relatedProduct.id}
-                    product={relatedProduct}
-                    index={index}
-                  />
-                ))}
+                  <span className="text-gray-600 font-poppins">
+                    Page {currentPage} of {totalPages}
+                  </span>
+
+                  {currentPage < totalPages && (
+                    <Link
+                      href={`/discover/${id}/reviews?page=${currentPage + 1}`}
+                      className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-poppins"
+                    >
+                      Next
+                      <ChevronRightIcon className="w-4 h-4 ml-2" />
+                    </Link>
+                  )}
+                </div>
+              )}
+
+              {/* Back to Product */}
+              <div className="text-center mt-12">
+                <Link
+                  href={`/discover/${id}`}
+                  className="inline-block px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium font-poppins"
+                >
+                  Back to Product
+                </Link>
               </div>
             </div>
           </section>
