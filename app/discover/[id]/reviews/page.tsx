@@ -64,20 +64,22 @@ export default async function ProductReviewsPage({
       notFound();
     }
 
-    // Fetch all reviews
+    // Fetch reviews with pagination
     const reviewsResponse = await axios.get(
       `${
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
-      }/api/reviews?productId=${id}`
+      }/api/reviews?productId=${id}&page=${currentPage}&limit=${reviewsPerPage}`
     );
-    const allReviews = reviewsResponse.data.reviews || [];
+    const reviewsData = reviewsResponse.data;
 
-    // Pagination
-    const totalReviews = allReviews.length;
-    const totalPages = Math.ceil(totalReviews / reviewsPerPage);
-    const startIndex = (currentPage - 1) * reviewsPerPage;
-    const endIndex = startIndex + reviewsPerPage;
-    const reviews = allReviews.slice(startIndex, endIndex);
+    if (!reviewsData.success) {
+      throw new Error("Failed to fetch reviews");
+    }
+
+    const reviews = reviewsData.reviews || [];
+    const pagination = reviewsData.pagination;
+    const totalReviews = pagination.totalCount;
+    const totalPages = pagination.totalPages;
 
     return (
       <div className="max-w-4xl mx-auto">

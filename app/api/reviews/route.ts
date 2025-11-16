@@ -11,27 +11,52 @@ export async function GET(request: NextRequest) {
     const productId = searchParams.get("productId");
     const orderId = searchParams.get("orderId");
     const userId = searchParams.get("userId");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
 
     if (productId) {
-      // Get all reviews for a specific product
-      const reviews = await prisma.review.findMany({
-        where: { productId },
-        include: {
-          user: {
-            select: {
-              firstname: true,
-              lastname: true,
+      // Calculate pagination
+      const skip = (page - 1) * limit;
+
+      // Get reviews for a specific product with pagination
+      const [reviews, totalCount] = await Promise.all([
+        prisma.review.findMany({
+          where: { productId },
+          include: {
+            user: {
+              select: {
+                firstname: true,
+                lastname: true,
+              },
             },
           },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+          orderBy: {
+            createdAt: "desc",
+          },
+          skip,
+          take: limit,
+        }),
+        prisma.review.count({
+          where: { productId },
+        }),
+      ]);
+
+      // Calculate pagination metadata
+      const totalPages = Math.ceil(totalCount / limit);
+      const hasNextPage = page < totalPages;
+      const hasPrevPage = page > 1;
 
       return NextResponse.json({
         success: true,
         reviews,
+        pagination: {
+          page,
+          limit,
+          totalCount,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        },
       });
     }
 

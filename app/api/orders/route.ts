@@ -218,26 +218,44 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    const orders = await prisma.order.findMany({
-      where: {
-        userId,
-      },
-      include: {
-        orderItems: {
-          include: {
-            product: {
-              include: {
-                images: true,
-                category: true,
+    // Extract pagination parameters
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+
+    // Calculate pagination
+    const skip = (page - 1) * limit;
+
+    // Fetch orders with pagination and count
+    const [orders, totalCount] = await Promise.all([
+      prisma.order.findMany({
+        where: {
+          userId,
+        },
+        include: {
+          orderItems: {
+            include: {
+              product: {
+                include: {
+                  images: true,
+                  category: true,
+                },
               },
             },
           },
         },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.order.count({
+        where: {
+          userId,
+        },
+      }),
+    ]);
 
     // Transform the orders to include calculated totals
     const ordersWithTotals: OrderWithTotals[] = orders.map(
@@ -256,9 +274,22 @@ export async function GET(request: NextRequest) {
       })
     );
 
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
     return NextResponse.json({
       success: true,
       orders: ordersWithTotals,
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      },
     });
   } catch (error) {
     console.error("Error fetching orders:", error);

@@ -79,6 +79,8 @@ const OrdersPage: React.FC = () => {
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [selectedOrderForReview, setSelectedOrderForReview] =
     useState<Order | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10); // Orders per page
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -99,21 +101,26 @@ const OrdersPage: React.FC = () => {
   }, []);
 
   const {
-    data: orders,
+    data: ordersResponse,
     isLoading,
     error,
-  } = useQuery<Order[]>({
-    queryKey: ["orders", user?.id],
+  } = useQuery({
+    queryKey: ["orders", user?.id, currentPage, pageSize],
     queryFn: async () => {
       if (!user?.id) throw new Error("No user");
-      const response = await axios.get(`/api/orders`);
+      const response = await axios.get(
+        `/api/orders?page=${currentPage}&limit=${pageSize}`
+      );
       if (response.data.success) {
-        return response.data.orders;
+        return response.data;
       }
       throw new Error("Failed to fetch orders");
     },
     enabled: !!user?.id,
   });
+
+  const orders = ordersResponse?.orders || [];
+  const pagination = ordersResponse?.pagination;
 
   useEffect(() => {
     if (error) {
@@ -124,7 +131,7 @@ const OrdersPage: React.FC = () => {
   // Check review status for completed orders
   useEffect(() => {
     if (orders) {
-      orders.forEach((order) => {
+      orders.forEach((order: Order) => {
         if (order.status === "COMPLETED" && !reviewStatuses[order.id]) {
           checkReviewStatus(order.id);
         }
@@ -429,6 +436,62 @@ const OrdersPage: React.FC = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="mt-8 flex items-center justify-between">
+              <div className="text-sm text-gray-700 font-poppins">
+                Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
+                {Math.min(
+                  pagination.page * pagination.limit,
+                  pagination.totalCount
+                )}{" "}
+                of {pagination.totalCount} orders
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={!pagination.hasPrevPage}
+                  className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <div className="flex items-center space-x-1">
+                  {Array.from(
+                    { length: Math.min(5, pagination.totalPages) },
+                    (_, i) => {
+                      const pageNum =
+                        Math.max(
+                          1,
+                          Math.min(pagination.totalPages - 4, currentPage - 2)
+                        ) + i;
+                      if (pageNum > pagination.totalPages) return null;
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`px-3 py-2 text-sm font-medium rounded-md ${
+                            pageNum === currentPage
+                              ? "text-white bg-gray-900"
+                              : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    }
+                  )}
+                </div>
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={!pagination.hasNextPage}
+                  className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </div>
