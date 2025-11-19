@@ -164,8 +164,8 @@ const Navigation = () => {
           >
             <Link href="/" className="flex items-center">
               <Image
-                src={lylalogolight}
-                alt="Prosupport Logo"
+                  src={lylalogolight}
+                  alt="Lyla's Stores Logo"
                 width={160}
                 height={160}
                 priority

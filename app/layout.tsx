@@ -20,9 +20,39 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "LyLa's Stores - Elegant Home Furnishings",
+  metadataBase: new URL("https://lylasstores.lolyraced.com/"),
+  title: {
+    default: "Lyla's Stores - Elegant Home Furnishings",
+    template: "%s | Lyla's Stores",
+  },
   description:
-    "Discover curated pieces that combine craftsmanship, comfort, and timeless design for your home.",
+    "Discover curated pieces that combine craftsmanship, comfort, and timeless design for your home at Lyla's Stores.",
+  openGraph: {
+    title: "Lyla's Stores - Elegant Home Furnishings",
+    description:
+      "Discover curated pieces that combine craftsmanship, comfort, and timeless design for your home.",
+    url: "https://lylasstores.lolyraced.com/",
+    siteName: "Lyla's Stores",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lyla's Stores - Elegant Home Furnishings",
+    description:
+      "Discover curated pieces that combine craftsmanship, comfort, and timeless design for your home.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({

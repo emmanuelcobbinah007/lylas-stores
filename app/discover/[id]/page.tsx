@@ -75,8 +75,43 @@ export default async function ProductPage({ params }: Props) {
     );
     const reviews = reviewsResponse.data.reviews || [];
 
+    const averageRating =
+      reviews.length > 0
+        ? reviews.reduce((acc: number, review: any) => acc + review.rating, 0) /
+          reviews.length
+        : 0;
+
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.name,
+      image: product.images,
+      description: product.description,
+      offers: {
+        "@type": "Offer",
+        priceCurrency: "USD",
+        price: product.price,
+        availability:
+          product.stock > 0
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+      },
+      aggregateRating:
+        reviews.length > 0
+          ? {
+              "@type": "AggregateRating",
+              ratingValue: averageRating,
+              reviewCount: reviews.length,
+            }
+          : undefined,
+    };
+
     return (
       <div className="max-w-7xl mx-auto">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <div className="my-28"></div>
         <main className="min-h-screen">
           {/* Breadcrumb */}

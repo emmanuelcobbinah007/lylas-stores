@@ -50,7 +50,7 @@ const Hero = ({ activeSale }: HeroProps) => {
         >
           <Image
             src={LylaPic}
-            alt="Lyla"
+            alt="Lyla's Stores Home Interior"
             priority
             placeholder="blur"
             blurDataURL={blurDataURL}
